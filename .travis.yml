@@ -24,8 +24,10 @@ before_script:
     - curl "https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext.inc" -o include/ripext.inc
     - curl "https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext/http.inc" -o include/ripext/http.inc
     - curl "https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext/json.inc" -o include/ripext/json.inc
+    - curl "https://raw.githubusercontent.com/sbpp/sourcebans-pp/v1.x/game/addons/sourcemod/scripting/include/sourcebans.inc" -o include/sourcebans.inc
+    - curl "https://raw.githubusercontent.com/sbpp/sourcebans-pp/v1.x/game/addons/sourcemod/scripting/include/sourcecomms.inc" -o include/sourcecomms.inc
     - chmod +x spcomp
     - chmod +x compile.sh
 
 script:
-    - ./compile.sh discord.sp discord_test.sp
+    - ./compile.sh discord.sp discord_test.sp discord_sb.sp
