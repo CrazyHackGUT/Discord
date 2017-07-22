@@ -1,0 +1,31 @@
+language: c
+dist: precise
+
+env:
+    - SMVERSION=1.7
+    - SMVERSION=1.8
+    - SMVERSION=1.9
+
+matrix:
+    fast_finish: true
+    allow_failures:
+    - env: SMVERSION=1.7
+
+before_install:
+    - sudo apt-get update
+    - sudo apt-get install gcc-multilib
+    - sudo apt-get install lib32stdc++6
+
+before_script:
+    - wget -q "http://www.sourcemod.net/latest.php?version=$SMVERSION&os=linux" -O sourcemod.tar.gz
+    - tar -xzf sourcemod.tar.gz
+    - cd addons/sourcemod/scripting/
+    - mkdir include/ripext
+    - curl "https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext.inc" -o include/rip.inc
+    - curl "https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext/http.inc" -o include/ripext/http.inc
+    - curl "https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext/json.inc" -o include/ripext/json.inc
+    - chmod +x spcomp
+    - chmod +x compile.sh
+
+script:
+    - ./compile.sh discord.sp discord_test.sp
