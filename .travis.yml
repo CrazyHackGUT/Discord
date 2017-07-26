@@ -30,4 +30,4 @@ before_script:
     - chmod +x compile.sh
 
 script:
-    - ./compile.sh discord.sp discord_test.sp discord_sb.sp
+    - ./compile.sh discord.sp discord_test.sp discord_sb.sp discord_report.sp
