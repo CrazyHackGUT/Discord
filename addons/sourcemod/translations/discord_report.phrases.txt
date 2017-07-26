@@ -1,0 +1,40 @@
+"Phrases"
+{
+    "Cooldown"
+    {
+        "#format"   "{1:d}"
+
+        "ru"        "Вы не можете отправлять репорты так часто! Подождите {1} секунд."
+        "en"        "You can't send reports so often! Please, wait {1} seconds."
+    }
+
+    "No Available Players"
+    {
+        "ru"        "Нет доступных игроков для репорта!"
+        "en"        "No available players for reporting!"
+    }
+
+    "UseChatReason"
+    {
+        "ru"        "Используя чат, введите причину репорта. Или используйте !cancel для отмены операции."
+        "en"        "Using the chat, enter the reason for the report. Or use !cancel for cancel operation."
+    }
+
+    "ReportPlayer"
+    {
+        "ru"        "Отправить жалобу на игрока"
+        "en"        "Send a report to the player"
+    }
+
+    "Send"
+    {
+        "ru"        "Жалоба отправлена! Она будет рассмотрена в ближайшее время."
+        "en"        "Report sended! It will be considered soon." 
+    }
+
+    "ReportCancelled"
+    {
+        "ru"        "Операция отменена."
+        "en"        "Operation cancelled."
+    }
+}
