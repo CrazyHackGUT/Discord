@@ -37,13 +37,15 @@
 #pragma semicolon 1
 #pragma newdecls required
 
+static const char g_szConVar[] = "sm_discord_report_cooldown";
+
 bool    g_bReasonChat[MAXPLAYERS+1];
 int     g_iApprReport[MAXPLAYERS+1];
 int     g_iVictim[MAXPLAYERS+1];
 
 public Plugin myinfo = {
     description = "Simple Report system. All reports sends into Discord server.",
-    version     = "1.0",
+    version     = "1.1",
     author      = "CrazyHackGUT aka Kruzya",
     name        = "[Discord] Simple Report System",
     url         = "https://kruzefag.ru/"
@@ -70,6 +72,8 @@ public void OnPluginStart() {
 
         OnClientPutInServer(i);
     }
+    
+    CreateConVar(g_szConVar, "60", "Cooldown after sending a report (in seconds)", _, true, 0.0);
 }
 
 public void OnClientPutInServer(int iClient) {
@@ -128,7 +132,7 @@ public Action OnSayHook(int iClient, int iArgs) {
         return Plugin_Continue;
     }
 
-    if (!GetClientOfUserId(g_iVictim[iClient])) {
+    if (!(g_iVictim[iClient] = GetClientOfUserId(g_iVictim[iClient]))) {
         PrintToChat(iClient, "[SM] %t", "Player no longer available");
 
         g_bReasonChat[iClient] = false;
@@ -145,17 +149,19 @@ public Action OnSayHook(int iClient, int iArgs) {
         GetCmdArgString(szReason, sizeof(szReason));
     }
 
-    g_bReasonChat[iClient] = false;
-    g_iVictim[iClient] = -1;
-
     if (!strcmp(szReason, "!cancel")) {
         PrintToChat(iClient, "[SM] %t", "ReportCancelled");
+        g_bReasonChat[iClient] = false;
+        g_iVictim[iClient] = -1;
         return Plugin_Handled;
     }
 
-    UTIL_ProcessReport(iClient, GetClientOfUserId(g_iVictim[iClient]), szReason);
+    UTIL_ProcessReport(iClient, g_iVictim[iClient], szReason);
     PrintToChat(iClient, "[SM] %t", "Send");
-    g_iApprReport[iClient] = GetTime() + 60;
+    g_iApprReport[iClient] = GetTime() + GetConVarInt(FindConVar(g_szConVar));
+
+    g_bReasonChat[iClient] = false;
+    g_iVictim[iClient] = -1;
 
     return Plugin_Handled;
 }
@@ -214,7 +220,7 @@ void UTIL_ProcessReport(int iClient, int iVictim, const char[] szReason) {
     Discord_AddField("Victim SteamID", szBuffer, true);
 
     // Reason
-    Discord_AddField("Reason", szReason);
+    Discord_AddField("Reason", szReason, true);
 
     Discord_EndMessage("report", true);
 }
