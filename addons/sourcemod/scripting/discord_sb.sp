@@ -1,6 +1,51 @@
-#include <sourcebans>
-#include <sourcecomms>
+/**
+ * =============================================================================
+ * [Discord] SourceBans
+ * Relaying all bans/comm punishments in Discord Server.
+ *
+ * File: discord_report.sp
+ * Role: -
+ * =============================================================================
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, version 3.0, as published by the
+ * Free Software Foundation.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * As a special exception, AlliedModders LLC gives you permission to link the
+ * code of this program (as well as its derivative works) to "Half-Life 2," the
+ * "Source Engine," the "SourcePawn JIT," and any Game MODs that run on software
+ * by the Valve Corporation.  You must obey the GNU General Public License in
+ * all respects for all other code used.  Additionally, AlliedModders LLC grants
+ * this exception to all derivative works.  AlliedModders LLC defines further
+ * exceptions, found in LICENSE.txt (as of this writing, version JULY-31-2007),
+ * or <http://www.sourcemod.net/license.php>.
+ *
+ * Version: $Id$
+ */
+
 #include <discord_extended>
+
+#undef REQUIRE_PLUGIN
+#tryinclude <sourcebans>
+#tryinclude <sourcecomms>
+#tryinclude <materialadmin>
+#define REQUIRE_PLUGIN
+
+#if !defined _sourcebans_included
+#if !defined _sourcecomms_included
+#if !defined _materialadmin_included
+  #error "Couldn't attach SourceBans / SourceComms / MaterialAdmin include"
+#endif
+#endif
+#endif
 
 #pragma newdecls required
 
@@ -10,16 +55,16 @@ stock const char g_szSBBColorName[] = "sm_discord_sbbcolor";
 stock const char g_szSBCColorName[] = "sm_discord_sbccolor";
 
 public Plugin myinfo = {
-    description = "SourceBans + SourceComms module for Discord Extended Library.",
-    version     = "1.1",
+    description = "SourceBans + SourceComms / MaterialAdmin module for Discord Extended Library.",
+    version     = "1.2",
     author      = "CrazyHackGUT aka Kruzya",
     name        = "[Discord] SourceBans + SourceComms",
     url         = "https://kruzefag.ru/"
 };
 
 char    g_szSite[256];
-//int     g_iCommsColor;
-//int     g_iBansColor;
+int     g_iCommsColor;
+int     g_iBansColor;
 bool    g_bHostname;
 
 /**
@@ -44,7 +89,6 @@ public void OnPluginStart() {
         OnHostChanged
     );
 
-    /**
     HookConVarChange(
         CreateConVar(
             g_szSBBColorName, "BE0000",
@@ -60,7 +104,6 @@ public void OnPluginStart() {
         ),
         OnCommsColorChanged
     );
-    */
 
     AutoExecConfig(true, "SourceBans", "Discord");
 }
@@ -68,11 +111,8 @@ public void OnPluginStart() {
 public void OnConfigsExecuted() {
     OnURLChanged(FindConVar(g_szSBUrlName), NULL_STRING, NULL_STRING);
     OnHostChanged(FindConVar(g_szSBHostName), NULL_STRING, NULL_STRING);
-
-    /**
     OnBansColorChanged(FindConVar(g_szSBBColorName), NULL_STRING, NULL_STRING);
     OnCommsColorChanged(FindConVar(g_szSBCColorName), NULL_STRING, NULL_STRING);
-    */
 }
 
 /**
@@ -86,7 +126,6 @@ public void OnHostChanged(Handle hCvar, const char[] szOld, const char[] szNew) 
     g_bHostname = GetConVarBool(hCvar);
 }
 
-/**
 public void OnBansColorChanged(Handle hCvar, const char[] szOld, const char[] szNew) {
     g_iBansColor = UTIL_GetColorFromHEX(hCvar);
 }
@@ -94,23 +133,17 @@ public void OnBansColorChanged(Handle hCvar, const char[] szOld, const char[] sz
 public void OnCommsColorChanged(Handle hCvar, const char[] szOld, const char[] szNew) {
     g_iCommsColor = UTIL_GetColorFromHEX(hCvar);
 }
-*/
 
+#if defined _sourcebans_included
 /**
  * SourceBans
  */
 public int SourceBans_OnBanPlayer(int client, int target, int time, char[] reason) {
-    Discord_StartMessage();
-    Discord_SetUsername("SourceBans");
-    Discord_SetTitle(g_szSite, "Open SourceBans Site");
-    // Discord_SetColor(g_iBansColor);
-
-    UTIL_AddHeader(client, target, time);
-
-    Discord_AddField("Reason", reason[0] ? reason : "*No reason present*");
-    Discord_EndMessage("sourcebans", true);
+    OnBanAdded(client, target, time, reason);
 }
+#endif
 
+#if defined _sourcecomms_included
 /**
  * SourceComms
  */
@@ -119,24 +152,22 @@ public int SourceComms_OnBlockAdded(int iClient, int iTarget, int iTime, int iTy
         return;
     }
 
-    Discord_StartMessage();
-    Discord_SetUsername("SourceComms");
-    Discord_SetTitle(g_szSite, "Open SourceComms Site");
-    // Discord_SetColor(g_iCommsColor);
-    UTIL_AddHeader(iClient, iTarget, iTime);
-
-    char szBuffer[256];
-
-    switch (iType) {
-        case TYPE_SILENCE:  strcopy(szBuffer, sizeof(szBuffer), "Voice + Text Chat");
-        case TYPE_MUTE:     strcopy(szBuffer, sizeof(szBuffer), "Voice Chat");
-        case TYPE_GAG:      strcopy(szBuffer, sizeof(szBuffer), "Text Chat");
-    }
-
-    Discord_AddField("Punishment Type", szBuffer, true);
-    Discord_AddField("Reason", szReason[0] ? szReason : "*No reason present*");
-    Discord_EndMessage("sourcebans", true);
+    OnBlockAdded(iClient, iTarget, iTime, iType, szReason);
 }
+#endif
+
+#if defined _materialadmin_included
+/**
+ * Material Admin
+ */
+public void MAOnClientMuted(int iClient, int iTarget, char[] sIp, char[] sSteamID, char[] sName, int iType, int iTime, char[] sReason) {
+    OnBlockAdded(iClient, iTarget,  iTime, iType, sReason);
+}
+
+public void MAOnClientBanned(int iClient, int iTarget, char[] sIp, char[] sSteamID, char[] sName, int iTime, char[] sReason) {
+    OnBanAdded(iClient, iTarget, iTime, sReason);
+}
+#endif
 
 void UTIL_FormatTime(int iTime, char[] szBuffer, int iMaxLength) {
     int days = iTime / (60 * 60 * 24);
@@ -157,17 +188,31 @@ void UTIL_FormatTime(int iTime, char[] szBuffer, int iMaxLength) {
     }
 }
 
-/**
 int UTIL_GetColorFromHEX(Handle hCvar) {
     char szBuffer[10];
     GetConVarString(hCvar, szBuffer, sizeof(szBuffer));
-    Format(szBuffer, sizeof(szBuffer), "0x%s", szBuffer);
-
-    PrintToServer("%s = %d", szBuffer, StringToInt(szBuffer));
-
-    return StringToInt(szBuffer);
+    return UTIL_HEX2DEC(szBuffer);
 }
-*/
+
+int UTIL_HEX2DEC(const char[] szHEX) {
+    int iResult = 0;
+
+    for (int i; i<strlen(szHEX); i++) {
+        char c = szHEX[i];
+
+        if (c >= 48 && c <= 57) {
+            c -= 48;
+        } else if (c >= 65 && c <= 70) {
+            c = (c - 65) + 10;
+        } else if (c >= 97 && c <= 102) {
+            c = (c - 97) + 10;
+        }
+
+        iResult = (iResult << 4) + c;
+    }
+
+    return iResult;
+}
 
 void UTIL_AddHeader(int iAdmin, int iTarget, int iTime) {
     char szBuffer[2][256];
@@ -201,4 +246,36 @@ void UTIL_AddHeader(int iAdmin, int iTarget, int iTime) {
         UTIL_FormatTime(iTime * 60, szBuffer[0], sizeof(szBuffer[]));
     }
     Discord_AddField("Length", szBuffer[0], true);
+}
+
+void OnBlockAdded(int iClient, int iTarget, int iTime, int iType, char[] szReason) {
+    Discord_StartMessage();
+    Discord_SetUsername("SourceComms");
+    Discord_SetTitle(g_szSite, "Open SourceComms Site");
+    Discord_SetColor(g_iCommsColor);
+    UTIL_AddHeader(iClient, iTarget, iTime);
+
+    char szBuffer[256];
+
+    switch (iType) {
+        case TYPE_SILENCE:  strcopy(szBuffer, sizeof(szBuffer), "Voice + Text Chat");
+        case TYPE_MUTE:     strcopy(szBuffer, sizeof(szBuffer), "Voice Chat");
+        case TYPE_GAG:      strcopy(szBuffer, sizeof(szBuffer), "Text Chat");
+    }
+
+    Discord_AddField("Punishment Type", szBuffer, true);
+    Discord_AddField("Reason", szReason[0] ? szReason : "*No reason present*", true);
+    Discord_EndMessage("sourcebans", true);
+}
+
+void OnBanAdded(int iClient, int iTarget, int iTime, const char[] szReason) {
+    Discord_StartMessage();
+    Discord_SetUsername("SourceBans");
+    Discord_SetTitle(g_szSite, "Open SourceBans Site");
+    Discord_SetColor(g_iBansColor);
+
+    UTIL_AddHeader(iClient, iTarget, iTime);
+
+    Discord_AddField("Reason", szReason[0] ? szReason : "*No reason present*", true);
+    Discord_EndMessage("sourcebans", true);
 }
