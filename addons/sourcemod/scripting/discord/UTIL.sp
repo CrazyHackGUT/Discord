@@ -92,7 +92,9 @@ void UTIL_SendMessage(Handle hMap, const char[] szConfigName, bool bAllowedDefau
             GetTrieValue(hItem, "short", bShort);
             hJSObj.SetBool("inline", bShort);
 
+#if defined DEBUG_MODE
             UTIL_JSONDUMP(hJSObj);
+#endif
 
             hArray.Push(hJSObj);
         }
@@ -137,10 +139,17 @@ void UTIL_SendMessage(Handle hMap, const char[] szConfigName, bool bAllowedDefau
         return;
     }
 
-    ReplaceString(SZF(szBuffer), "https://discordapp.com/", NULL_STRING, false);
-    g_hHTTPClient.Post(szBuffer, hJSONRoot, OnRequestComplete);
+    // ReplaceString(SZF(szBuffer), "https://discordapp.com/", NULL_STRING, false);
+    //
+    // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+    // h t t p s : / / d i s  c  o  r  d  a  p  p  .  c  o  m  /  *
+    g_hHTTPClient.Post(szBuffer[23], hJSONRoot, OnRequestComplete);
+
+#if defined DEBUG_MODE
     DebugMessage("UTIL_SendMessage(): Request sended to webhook %s (%s)", szConfigName, szBuffer)
     UTIL_JSONDUMP(hJSONRoot);
+#endif
+
     UTIL_Cleanup(hCleanup);
 }
 
