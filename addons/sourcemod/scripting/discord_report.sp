@@ -79,6 +79,7 @@ public void OnPluginStart() {
     }
     
     CreateConVar(g_szConVar, "60", "Cooldown after sending a report (in seconds)", _, true, 0.0);
+    g_hReasons = CreateArray(ByteCountToCells(256));
 }
 
 public void OnMapStart() {
