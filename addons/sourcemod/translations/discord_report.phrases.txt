@@ -37,4 +37,16 @@
         "ru"        "Операция отменена."
         "en"        "Operation cancelled."
     }
+
+    "SelectReason_Title"
+    {
+        "ru"        "Выберите причину"
+        "en"        "Select the reason"
+    }
+
+    "MyOwnReason"
+    {
+        "ru"        "Указать вручную в чате..."
+        "en"        "Input manually with chat..."
+    }
 }

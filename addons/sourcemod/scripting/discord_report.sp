@@ -37,15 +37,20 @@
 #pragma semicolon 1
 #pragma newdecls required
 
+#define nullstr NULL_STRING
+#define nullvec NULL_VECTOR
+#define nullptr null
+
 static const char g_szConVar[] = "sm_discord_report_cooldown";
 
+Handle  g_hReasons;
 bool    g_bReasonChat[MAXPLAYERS+1];
 int     g_iApprReport[MAXPLAYERS+1];
 int     g_iVictim[MAXPLAYERS+1];
 
 public Plugin myinfo = {
     description = "Simple Report system. All reports sends into Discord server.",
-    version     = "1.1",
+    version     = "1.2",
     author      = "CrazyHackGUT aka Kruzya",
     name        = "[Discord] Simple Report System",
     url         = "https://kruzefag.ru/"
@@ -74,6 +79,10 @@ public void OnPluginStart() {
     }
     
     CreateConVar(g_szConVar, "60", "Cooldown after sending a report (in seconds)", _, true, 0.0);
+}
+
+public void OnMapStart() {
+    LoadReasons();
 }
 
 public void OnClientPutInServer(int iClient) {
@@ -182,9 +191,35 @@ public int SelectPlayerHandler(Handle hMenu, MenuAction eAction, int iParam1, in
                 return;
             }
 
-            g_bReasonChat[iParam1] = true;
             g_iVictim[iParam1] = GetClientUserId(iUID);
-            PrintToChat(iParam1, "[SM] %t", "UseChatReason");
+            if (GetArraySize(g_hReasons) == 0) {
+                UTIL_HookChatMessage(iParam1);
+            } else {
+                UTIL_DrawReasonsMenu(iParam1);
+            }
+        }
+    }
+}
+
+public int ReasonsMenuHandler(Handle hMenu, MenuAction eAction, int iParam1, int iParam2) {
+    switch (eAction) {
+        case MenuAction_End:    CloseHandle(hMenu);
+        case MenuAction_Select: {
+            char szReason[128];
+            GetMenuItem(hMenu, iParam2, szReason, sizeof(szReason));
+
+            if (!GetClientOfUserId(g_iVictim[iParam1])) {
+                PrintToChat(iParam1, "[SM] %t", "Player no longer available");
+                g_iVictim[iParam1] = -1;
+                return;
+            }
+
+            if (strcmp(szReason, "###MY_OWN_REASON###", true) == 0) {
+                UTIL_HookChatMessage(iParam1);
+                return;
+            }
+
+            UTIL_ProcessReport(iParam1, g_iVictim[iParam1], szReason);
         }
     }
 }
@@ -223,4 +258,71 @@ void UTIL_ProcessReport(int iClient, int iVictim, const char[] szReason) {
     Discord_AddField("Reason", szReason, true);
 
     Discord_EndMessage("report", true);
+}
+
+/**
+ * @section Reasons
+ */
+void LoadReasons() {
+    static char szReasonsPath[PLATFORM_MAX_PATH];
+    if (GetArraySize(g_hReasons) != 0) {
+        ClearArray(g_hReasons);
+    }
+
+    if (szReasonsPath[0] == 0) {
+        BuildPath(Path_SM, szReasonsPath, sizeof(szReasonsPath), "configs/Discord_ReportReasons.ini");
+    }
+
+    Handle hFile;
+    if (!FileExists(szReasonsPath) || (hFile = OpenFile(szReasonsPath, "rt")) == nullptr) {
+        LogError("[Discord: Simple Report System] Couldn't load reasons from %s", szReasonsPath);
+        return;
+    }
+
+    char szBuffer[128];
+    while (!IsEndOfFile(hFile)) {
+        ReadFileLine(hFile, szBuffer, sizeof(szBuffer));
+
+        if (szBuffer[0] == '/' && szBuffer[1] == '/') {
+            continue;
+        }
+
+        PushArrayString(g_hReasons, szBuffer);
+    }
+    
+    CloseHandle(hFile);
+}
+
+/**
+ * @section UTILs.
+ */
+void UTIL_HookChatMessage(int iClient) {
+    g_bReasonChat[iClient] = true;
+    PrintToChat(iClient, "[SM] %t", "UseChatReason");
+}
+
+void UTIL_DrawReasonsMenu(int iClient) {
+    Handle hMenu = CreateMenu(ReasonsMenuHandler);
+    SetMenuExitBackButton(hMenu, true);
+    SetMenuExitButton(hMenu, false);
+    SetMenuTitle(hMenu, "%T:\n ", "SelectReason_Title");
+
+    char szBuffer[128];
+    int iLength = GetArraySize(g_hReasons);
+    for (int i; i < iLength; i++) {
+        GetArrayString(g_hReasons, i, szBuffer, sizeof(szBuffer));
+
+        if (szBuffer[0] == 0) {
+            AddMenuItem(hMenu, nullstr, nullstr, ITEMDRAW_SPACER);
+        } else {
+            AddMenuItem(hMenu, szBuffer, szBuffer, ITEMDRAW_DEFAULT);
+        }
+    }
+
+    AddMenuItem(hMenu, nullstr, nullstr, ITEMDRAW_SPACER);
+
+    FormatEx(szBuffer, sizeof(szBuffer), "%T", "MyOwnReason", iClient);
+    AddMenuItem(hMenu, "###MY_OWN_REASON###", szBuffer, ITEMDRAW_DEFAULT);
+
+    DisplayMenu(hMenu, iClient, MENU_TIME_FOREVER);
 }
