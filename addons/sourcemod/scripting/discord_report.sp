@@ -167,11 +167,6 @@ public Action OnSayHook(int iClient, int iArgs) {
     }
 
     UTIL_ProcessReport(iClient, g_iVictim[iClient], szReason);
-    PrintToChat(iClient, "[SM] %t", "Send");
-    g_iApprReport[iClient] = GetTime() + GetConVarInt(FindConVar(g_szConVar));
-
-    g_bReasonChat[iClient] = false;
-    g_iVictim[iClient] = -1;
 
     return Plugin_Handled;
 }
@@ -220,7 +215,7 @@ public int ReasonsMenuHandler(Handle hMenu, MenuAction eAction, int iParam1, int
                 return;
             }
 
-            UTIL_ProcessReport(iParam1, g_iVictim[iParam1], szReason);
+            UTIL_ProcessReport(iParam1, GetClientOfUserId(g_iVictim[iParam1]), szReason);
         }
     }
 }
@@ -259,6 +254,13 @@ void UTIL_ProcessReport(int iClient, int iVictim, const char[] szReason) {
     Discord_AddField("Reason", szReason, true);
 
     Discord_EndMessage("report", true);
+
+    // Notify client.
+    PrintToChat(iClient, "[SM] %t", "Send");
+    g_iApprReport[iClient] = GetTime() + GetConVarInt(FindConVar(g_szConVar));
+
+    g_bReasonChat[iClient] = false;
+    g_iVictim[iClient] = -1;
 }
 
 /**
@@ -306,13 +308,14 @@ void UTIL_DrawReasonsMenu(int iClient) {
     Handle hMenu = CreateMenu(ReasonsMenuHandler);
     SetMenuExitBackButton(hMenu, true);
     SetMenuExitButton(hMenu, false);
-    SetMenuTitle(hMenu, "%T:\n ", "SelectReason_Title");
+    SetMenuTitle(hMenu, "%T:\n ", "SelectReason_Title", iClient);
 
     char szBuffer[128];
     int iLength = GetArraySize(g_hReasons);
     for (int i; i < iLength; i++) {
         GetArrayString(g_hReasons, i, szBuffer, sizeof(szBuffer));
 
+        TrimString(szBuffer);
         if (szBuffer[0] == 0) {
             AddMenuItem(hMenu, nullstr, nullstr, ITEMDRAW_SPACER);
         } else {
