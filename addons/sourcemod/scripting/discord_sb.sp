@@ -49,6 +49,10 @@
 
 #pragma newdecls required
 
+#define _INTERNAL_SILENCE   3
+#define _INTERNAL_MUTE      1
+#define _INTERNAL_GAG       2
+
 stock const char g_szSBUrlName[]    = "sm_discord_sburl";
 stock const char g_szSBHostName[]   = "sm_discord_sbhost";
 stock const char g_szSBBColorName[] = "sm_discord_sbbcolor";
@@ -56,7 +60,7 @@ stock const char g_szSBCColorName[] = "sm_discord_sbccolor";
 
 public Plugin myinfo = {
     description = "SourceBans + SourceComms / MaterialAdmin module for Discord Extended Library.",
-    version     = "1.2",
+    version     = "1.2.1",
     author      = "CrazyHackGUT aka Kruzya",
     name        = "[Discord] SourceBans + SourceComms",
     url         = "https://kruzefag.ru/"
@@ -161,10 +165,24 @@ public int SourceComms_OnBlockAdded(int iClient, int iTarget, int iTime, int iTy
  * Material Admin
  */
 public void MAOnClientMuted(int iClient, int iTarget, char[] sIp, char[] sSteamID, char[] sName, int iType, int iTime, char[] sReason) {
-    OnBlockAdded(iClient, iTarget,  iTime, iType, sReason);
+    if (iTarget == 0) {
+        return;
+    }
+
+    switch (iType) {
+        case MA_GAG:        iType = _INTERNAL_GAG;
+        case MA_MUTE:       iType = _INTERNAL_MUTE;
+        case MA_SILENCE:    iType = _INTERNAL_SILENCE;
+    }
+
+    OnBlockAdded(iClient, iTarget, iTime, iType, sReason);
 }
 
 public void MAOnClientBanned(int iClient, int iTarget, char[] sIp, char[] sSteamID, char[] sName, int iTime, char[] sReason) {
+    if (iTarget == 0) {
+        return;
+    }
+
     OnBanAdded(iClient, iTarget, iTime, sReason);
 }
 #endif
@@ -258,9 +276,9 @@ void OnBlockAdded(int iClient, int iTarget, int iTime, int iType, char[] szReaso
     char szBuffer[256];
 
     switch (iType) {
-        case TYPE_SILENCE:  strcopy(szBuffer, sizeof(szBuffer), "Voice + Text Chat");
-        case TYPE_MUTE:     strcopy(szBuffer, sizeof(szBuffer), "Voice Chat");
-        case TYPE_GAG:      strcopy(szBuffer, sizeof(szBuffer), "Text Chat");
+        case _INTERNAL_SILENCE:  strcopy(szBuffer, sizeof(szBuffer), "Voice + Text Chat");
+        case _INTERNAL_MUTE:     strcopy(szBuffer, sizeof(szBuffer), "Voice Chat");
+        case _INTERNAL_GAG:      strcopy(szBuffer, sizeof(szBuffer), "Text Chat");
     }
 
     Discord_AddField("Punishment Type", szBuffer, true);
