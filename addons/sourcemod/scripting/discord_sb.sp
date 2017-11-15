@@ -264,7 +264,7 @@ void OnBlockAdded(int iClient, int iTarget, int iTime, int iType, char[] szReaso
     }
 
     Discord_AddField("Punishment Type", szBuffer, true);
-    Discord_AddField("Reason", szReason[0] ? szReason : "*No reason present*", true);
+    Discord_AddField("Reason", szReason[0] ? szReason : "*No reason specified*", true);
     Discord_EndMessage("sourcebans", true);
 }
 
@@ -276,6 +276,6 @@ void OnBanAdded(int iClient, int iTarget, int iTime, const char[] szReason) {
 
     UTIL_AddHeader(iClient, iTarget, iTime);
 
-    Discord_AddField("Reason", szReason[0] ? szReason : "*No reason present*", true);
+    Discord_AddField("Reason", szReason[0] ? szReason : "*No reason specified*", true);
     Discord_EndMessage("sourcebans", true);
 }
