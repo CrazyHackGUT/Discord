@@ -49,6 +49,11 @@ public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iEr
     CreateNative("Discord_SetTitle",        API_SetTitle);
     CreateNative("Discord_AddField",        API_AddField);
 
+    // WebHooks.
+    CreateNative("Discord_WebHookExists",   API_WebHookExists);
+    CreateNative("Discord_ReloadConfig",    API_ReloadConfig);
+    CreateNative("Discord_BindWebHook",     API_BindWebHook);
+
     RegPluginLibrary("discord_extended");
 }
 

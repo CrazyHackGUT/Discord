@@ -139,11 +139,7 @@ void UTIL_SendMessage(Handle hMap, const char[] szConfigName, bool bAllowedDefau
         return;
     }
 
-    // ReplaceString(SZF(szBuffer), "https://discordapp.com/", NULL_STRING, false);
-    //
-    // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
-    // h t t p s : / / d i s  c  o  r  d  a  p  p  .  c  o  m  /  *
-    g_hHTTPClient.Post(szBuffer[23], hJSONRoot, OnRequestComplete);
+    g_hHTTPClient.Post(szBuffer, hJSONRoot, OnRequestComplete);
 
 #if defined DEBUG_MODE
     DebugMessage("UTIL_SendMessage(): Request sended to webhook %s (%s)", szConfigName, szBuffer)
@@ -198,4 +194,18 @@ void UTIL_JSONDUMP(JSON hJSON) {
     char szBuffer[16384];
     hJSON.ToString(szBuffer, sizeof(szBuffer)); // JSON_INDENT(2)
     PrintToServer(szBuffer);
+}
+
+bool UTIL_AddWebHook(const char[] szWebHookName, const char[] szURL, bool bRewriteIfExists = false) {
+    DebugMessage("UTIL_AddWebHook: %s --> %s", szWebHookName, szURL)
+
+    int iNeedPos = StrContains(szURL, "discordapp.com", false);
+    if (iNeedPos == -1) {
+        return false;
+    }
+
+    // d i s c o r d a p p .  c  o  m  /  *
+    // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+
+    return SetTrieString(g_hWebHooks, szWebHookName, szURL[iNeedPos + 15], bRewriteIfExists);
 }

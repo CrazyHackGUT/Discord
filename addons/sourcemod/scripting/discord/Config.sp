@@ -53,6 +53,7 @@ void Discord_Reload() {
     delete hSMC;
 
     if (eResult == SMCError_Okay) {
+        g_bFirstConfigLoad = true;
         return;
     }
 
@@ -86,5 +87,5 @@ public SMCResult SMC_ns(Handle hSMC, const char[] szName, bool bOptQuotes) {}
 public SMCResult SMC_es(Handle hSMC) {}
 public SMCResult SMC_kv(Handle hSMC, const char[] szKey, const char[] szValue, bool bKeyQuotes, bool bValueQuotes) {
     DebugMessage("SMC_kv(): Key %s, Value %s", szKey, szValue)
-    return SetTrieString(g_hWebHooks, szKey, szValue, true) ? SMCParse_Continue : SMCParse_HaltFail;
+    return UTIL_AddWebHook(szKey, szValue, true) ? SMCParse_Continue : SMCParse_HaltFail;
 }

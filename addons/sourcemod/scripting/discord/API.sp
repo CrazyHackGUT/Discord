@@ -82,6 +82,10 @@ public int API_EndMessage(Handle hPlugin, int iNumParams) {
     char szWebHookName[64];
     GetNativeString(1, SZF(szWebHookName));
 
+    if (g_bFirstConfigLoad == false) {
+        Discord_Reload();
+    }
+
     UTIL_SendMessage(g_hMessage, szWebHookName, GetNativeCell(2));
     Discord_CancelMessage();
 }
@@ -179,4 +183,35 @@ public int API_AddField(Handle hPlugin, int iNumParams) {
     SetTrieValue(hMap, "short", GetNativeCell(3));
 
     PushArrayCell(hArray, hMap);
+}
+
+public int API_WebHookExists(Handle hPlugin, int iNumParams) {
+    DebugMessage("API_WebHookExists()")
+
+    if (g_bFirstConfigLoad == false) {
+        Discord_Reload();
+    }
+
+    char szBuffer[64];
+    char szRes[4];
+
+    GetNativeString(1, szBuffer, sizeof(szBuffer));
+    return (GetTrieString(g_hWebHooks, szBuffer, szRes, sizeof(szRes))) ? 1 : 0;
+}
+
+public int API_ReloadConfig(Handle hPlugin, int iNumParams) {
+    DebugMessage("API_ReloadConfig()")
+    Discord_Reload();
+}
+
+public int API_BindWebHook(Handle hPlugin, int iNumParams) {
+    DebugMessage("API_BindWebHook()")
+
+    char szWebHookName[64];
+    char szURL[256];
+
+    GetNativeString(1, szWebHookName,   sizeof(szWebHookName));
+    GetNativeString(2, szURL,           sizeof(szURL));
+
+    return UTIL_AddWebHook(szWebHookName, szURL, false) ? 1 : 0;
 }

@@ -92,6 +92,36 @@ native void Discord_SetTitle(const char[] szURL, const char[] szText, any ...);
  */
 native void Discord_AddField(const char[] szTitle, const char[] szValue, bool bInline = false);
 
+/**
+ * Checks for webhook availability.
+ *
+ * @param   szWebHook   WebHook name.
+ *
+ * @return  bool
+ */
+native bool Discord_WebHookExists(const char[] szWebHook);
+
+/**
+ * Reloads a core configuration.
+ *
+ * @noreturn
+ */
+native void Discord_ReloadConfig();
+
+/**
+ * Manually setups a webhook URL.
+ * This is can be helpful for a plugin-specific webhooks.
+ *
+ * This function protects already created webhooks.
+ * You can't replace existing webhook.
+ * 
+ * @param   szName      WebHook name.
+ * @param   szURL       WebHook URL.
+ *
+ * @return  bool
+ */
+native bool Discord_BindWebHook(const char[] szName, const char[] szURL);
+
 public SharedPlugin __pl_discord_extended = {
     name = "discord_extended",
     file = "discord/Core.smx",
@@ -113,5 +143,10 @@ public __pl_discord_extended_SetNTVOptional() {
     MarkNativeAsOptional("Discord_SetColor");
     MarkNativeAsOptional("Discord_SetTitle");
     MarkNativeAsOptional("Discord_AddField");
+
+    // v1.0.2
+    MarkNativeAsOptional("Discord_WebHookExists");
+    MarkNativeAsOptional("Discord_ReloadConfig");
+    MarkNativeAsOptional("Discord_BindWebHook");
 }
 #endif
