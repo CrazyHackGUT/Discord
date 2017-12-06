@@ -67,7 +67,7 @@ public void OnPluginStart() {
     FormatEx(SZF(szUserAgent), "SourcePawn (DiscordExtended v%s)", PLUGIN_VERSION);
     DebugMessage("OnPluginStart(): Generated User-Agent: %s", szUserAgent)
 
-    g_hHTTPClient = new HTTPClient("https://discordapp.com");
+    g_hHTTPClient = new HTTPClient("https://discordapp.com/api/webhooks/");
     g_hHTTPClient.SetHeader("Content-Type", "application/json");
     g_hHTTPClient.SetHeader("User-Agent",   szUserAgent);
     DebugMessage("OnPluginStart(): Created HTTP Client with defined Content-Type and User-Agent.")
@@ -94,9 +94,11 @@ public void OnNextTick(any data) {
 public void OnRequestComplete(HTTPResponse Response, any value) {
     DebugMessage("OnRequestComplete(): Status %d", Response.Status)
 
+#if defined DEBUG_MODE
     JSON hJSON = Response.Data;
     if (hJSON) {
         UTIL_JSONDUMP(hJSON);
         CloseHandle(hJSON);
     }
+#endif
 }

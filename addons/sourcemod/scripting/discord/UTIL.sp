@@ -188,7 +188,7 @@ void UTIL_Cleanup(Handle hCleanup) {
     DebugMessage("UTIL_Cleanup(): Deleted storage %x.", hCleanup)
 }
 
-void UTIL_JSONDUMP(JSON hJSON) {
+stock void UTIL_JSONDUMP(JSON hJSON) {
     DebugMessage("UTIL_JSONDUMP(): Started. JSON Object %x.", hJSON)
 
     char szBuffer[16384];
@@ -199,13 +199,13 @@ void UTIL_JSONDUMP(JSON hJSON) {
 bool UTIL_AddWebHook(const char[] szWebHookName, const char[] szURL, bool bRewriteIfExists = false) {
     DebugMessage("UTIL_AddWebHook: %s --> %s", szWebHookName, szURL)
 
-    int iNeedPos = StrContains(szURL, "discordapp.com", false);
+    int iNeedPos = StrContains(szURL, "discordapp.com/api/webhooks/", false);
     if (iNeedPos == -1) {
         return false;
     }
 
-    // d i s c o r d a p p .  c  o  m  /  *
-    // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+    // d i s c o r d a p p .  c  o  m  /  a  p  i  /  w  e  b  h  o  o  k  s  /  *
+    // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28
 
-    return SetTrieString(g_hWebHooks, szWebHookName, szURL[iNeedPos + 15], bRewriteIfExists);
+    return SetTrieString(g_hWebHooks, szWebHookName, szURL[iNeedPos + 28], bRewriteIfExists);
 }
