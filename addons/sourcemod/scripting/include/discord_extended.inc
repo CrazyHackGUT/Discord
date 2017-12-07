@@ -155,5 +155,8 @@ public __pl_discord_extended_SetNTVOptional() {
     MarkNativeAsOptional("Discord_WebHookExists");
     MarkNativeAsOptional("Discord_ReloadConfig");
     MarkNativeAsOptional("Discord_BindWebHook");
+
+    // v1.0.4
+    MarkNativeAsOptional("Discord_IsMessageProcessing");
 }
 #endif
