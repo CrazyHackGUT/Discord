@@ -44,6 +44,12 @@ void API_ValidateMsg() {
 }
 
 // Natives
+public int API_IsMessageProcessing(Handle hPlugin, int iNumParams) {
+    DebugMessage("API_IsMessageProcessing()")
+
+    return (g_hMessage != null) ? 1 : 0;
+}
+
 public int API_CancelMessage(Handle hPlugin, int iNumParams) {
     DebugMessage("API_CancelMessage()")
     if (g_hMessage) {

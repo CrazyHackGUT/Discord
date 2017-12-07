@@ -87,5 +87,10 @@ public SMCResult SMC_ns(Handle hSMC, const char[] szName, bool bOptQuotes) {}
 public SMCResult SMC_es(Handle hSMC) {}
 public SMCResult SMC_kv(Handle hSMC, const char[] szKey, const char[] szValue, bool bKeyQuotes, bool bValueQuotes) {
     DebugMessage("SMC_kv(): Key %s, Value %s", szKey, szValue)
-    return UTIL_AddWebHook(szKey, szValue, true) ? SMCParse_Continue : SMCParse_HaltFail;
+    bool bResult = UTIL_AddWebHook(szKey, szValue, true);
+    if (!strcmp(szKey, "default", true)) {
+        // Fail allowed. Sometimes `default` webhook leaves empty.
+        return SMCParse_Continue;
+    }
+    return bResult ? SMCParse_Continue : SMCParse_HaltFail;
 }

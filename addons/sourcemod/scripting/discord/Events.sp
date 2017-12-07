@@ -35,24 +35,25 @@ public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iEr
     DebugMessage("AskPluginLoad2(): Called.")
 
     // Starting and ending for messages.
-    CreateNative("Discord_CancelMessage",   API_CancelMessage);
-    CreateNative("Discord_StartMessage",    API_StartMessage);
-    CreateNative("Discord_EndMessage",      API_EndMessage);
+    CreateNative("Discord_IsMessageProcessing", API_IsMessageProcessing);
+    CreateNative("Discord_CancelMessage",       API_CancelMessage);
+    CreateNative("Discord_StartMessage",        API_StartMessage);
+    CreateNative("Discord_EndMessage",          API_EndMessage);
 
     // Setting parameters for message.
-    CreateNative("Discord_SetUsername",     API_SetUsername);
-    CreateNative("Discord_SetAvatar",       API_SetAvatar); 
+    CreateNative("Discord_SetUsername",         API_SetUsername);
+    CreateNative("Discord_SetAvatar",           API_SetAvatar); 
 
     // Content.
-    CreateNative("Discord_SetContent",      API_SetContent);    // formatnativestring
-    CreateNative("Discord_SetColor",        API_SetColor);      // only HEX (strlen(szColor) == 7)
-    CreateNative("Discord_SetTitle",        API_SetTitle);
-    CreateNative("Discord_AddField",        API_AddField);
+    CreateNative("Discord_SetContent",          API_SetContent);    // formatnativestring
+    CreateNative("Discord_SetColor",            API_SetColor);      // only HEX (strlen(szColor) == 7)
+    CreateNative("Discord_SetTitle",            API_SetTitle);
+    CreateNative("Discord_AddField",            API_AddField);
 
     // WebHooks.
-    CreateNative("Discord_WebHookExists",   API_WebHookExists);
-    CreateNative("Discord_ReloadConfig",    API_ReloadConfig);
-    CreateNative("Discord_BindWebHook",     API_BindWebHook);
+    CreateNative("Discord_WebHookExists",       API_WebHookExists);
+    CreateNative("Discord_ReloadConfig",        API_ReloadConfig);
+    CreateNative("Discord_BindWebHook",         API_BindWebHook);
 
     RegPluginLibrary("discord_extended");
 }
@@ -67,8 +68,10 @@ public void OnPluginStart() {
     FormatEx(SZF(szUserAgent), "SourcePawn (DiscordExtended v%s)", PLUGIN_VERSION);
     DebugMessage("OnPluginStart(): Generated User-Agent: %s", szUserAgent)
 
-    g_hHTTPClient = new HTTPClient("https://discordapp.com/api/webhooks/");
-    g_hHTTPClient.SetHeader("Content-Type", "application/json");
+    g_hHTTPClient = new HTTPClient("https://discordapp.com/api/webhooks");
+
+    // This is not required. See https://github.com/CrazyHackGUT/sm-ripext/blob/master/curlapi.cpp#L41 for more details.
+    // g_hHTTPClient.SetHeader("Content-Type", "application/json");
     g_hHTTPClient.SetHeader("User-Agent",   szUserAgent);
     DebugMessage("OnPluginStart(): Created HTTP Client with defined Content-Type and User-Agent.")
 
