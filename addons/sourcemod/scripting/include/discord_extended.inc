@@ -4,6 +4,13 @@
 #define _discord_extended_included
 
 /**
+ * Checks a existing started message.
+ *
+ * @return  bool
+ */
+native bool Discord_IsMessageProcessing();
+
+/**
  * Starts a new message for webhook.
  * WARNING! If you don't call EndMessage() in one tick with StartMessage(), message automatically has been cancelled!
  *
