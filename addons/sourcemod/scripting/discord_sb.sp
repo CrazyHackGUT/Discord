@@ -58,9 +58,14 @@ stock const char g_szSBHostName[]   = "sm_discord_sbhost";
 stock const char g_szSBBColorName[] = "sm_discord_sbbcolor";
 stock const char g_szSBCColorName[] = "sm_discord_sbccolor";
 
+#define _INTERNAL_COMMS     0
+#define _INTERNAL_BANS      1
+#define _INTERNAL_CHANCOUNT 2
+stock const char    g_szChannelNames[][] = { "sourcecomms", "sourcebans" };
+
 public Plugin myinfo = {
     description = "SourceBans + SourceComms / MaterialAdmin module for Discord Extended Library.",
-    version     = "1.2.1",
+    version     = "1.2.2",
     author      = "CrazyHackGUT aka Kruzya",
     name        = "[Discord] SourceBans + SourceComms",
     url         = "https://kruzefag.ru/"
@@ -143,6 +148,10 @@ public void OnCommsColorChanged(Handle hCvar, const char[] szOld, const char[] s
  * SourceBans
  */
 public int SourceBans_OnBanPlayer(int client, int target, int time, char[] reason) {
+    if (!UTIL_IsReadyToSend()) {
+        return;
+    }
+
     OnBanAdded(client, target, time, reason);
 }
 #endif
@@ -152,7 +161,7 @@ public int SourceBans_OnBanPlayer(int client, int target, int time, char[] reaso
  * SourceComms
  */
 public int SourceComms_OnBlockAdded(int iClient, int iTarget, int iTime, int iType, char[] szReason) {
-    if (iType > 3) {
+    if (iType > 3 || !UTIL_IsReadyToSend()) {
         return;
     }
 
@@ -165,7 +174,7 @@ public int SourceComms_OnBlockAdded(int iClient, int iTarget, int iTime, int iTy
  * Material Admin
  */
 public void MAOnClientMuted(int iClient, int iTarget, char[] sIp, char[] sSteamID, char[] sName, int iType, int iTime, char[] sReason) {
-    if (iTarget == 0) {
+    if (iTarget == 0 || !UTIL_IsReadyToSend()) {
         return;
     }
 
@@ -283,7 +292,7 @@ void OnBlockAdded(int iClient, int iTarget, int iTime, int iType, char[] szReaso
 
     Discord_AddField("Punishment Type", szBuffer, true);
     Discord_AddField("Reason", szReason[0] ? szReason : "*No reason specified*", true);
-    Discord_EndMessage("sourcebans", true);
+    Discord_EndMessage(Discord_WebHookExists(g_szChannelNames[_INTERNAL_COMMS]) ? g_szChannelNames[_INTERNAL_COMMS] : g_szChannelNames[_INTERNAL_BANS], true);
 }
 
 void OnBanAdded(int iClient, int iTarget, int iTime, const char[] szReason) {
@@ -295,5 +304,12 @@ void OnBanAdded(int iClient, int iTarget, int iTime, const char[] szReason) {
     UTIL_AddHeader(iClient, iTarget, iTime);
 
     Discord_AddField("Reason", szReason[0] ? szReason : "*No reason specified*", true);
-    Discord_EndMessage("sourcebans", true);
+    Discord_EndMessage(g_szChannelNames[_INTERNAL_BANS], true);
+}
+
+bool UTIL_IsReadyToSend() {
+    return (
+        Discord_WebHookExists("default") ||
+        Discord_WebHookExists(g_szChannelNames[_INTERNAL_BANS])
+    );
 }
