@@ -107,7 +107,8 @@ void UTIL_SendMessage(Handle hMap, const char[] szConfigName, bool bAllowedDefau
     }
 
     JSONObject hJSONRoot = new JSONObject();
-    PushArrayCell(hCleanup, hJSONRoot);
+    // this not required, because code retry process request, if failed.
+    // PushArrayCell(hCleanup, hJSONRoot);
     hJSONRoot.Set("embeds", msg);
 
     // Username, avatar
@@ -139,7 +140,11 @@ void UTIL_SendMessage(Handle hMap, const char[] szConfigName, bool bAllowedDefau
         return;
     }
 
-    g_hHTTPClient.Post(szBuffer, hJSONRoot, OnRequestComplete);
+    DataPack hPack = new DataPack();
+    g_hHTTPClient.Post(szBuffer, hJSONRoot, OnRequestComplete, hPack);
+
+    hPack.WriteCell(hJSONRoot);
+    hPack.WriteString(szBuffer);
 
 #if defined DEBUG_MODE
     DebugMessage("UTIL_SendMessage(): Request sended to webhook %s (%s)", szConfigName, szBuffer)

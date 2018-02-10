@@ -45,8 +45,8 @@ public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iEr
     CreateNative("Discord_SetAvatar",           API_SetAvatar); 
 
     // Content.
-    CreateNative("Discord_SetContent",          API_SetContent);    // formatnativestring
-    CreateNative("Discord_SetColor",            API_SetColor);      // only HEX (strlen(szColor) == 7)
+    CreateNative("Discord_SetContent",          API_SetContent);
+    CreateNative("Discord_SetColor",            API_SetColor);
     CreateNative("Discord_SetTitle",            API_SetTitle);
     CreateNative("Discord_AddField",            API_AddField);
 
@@ -75,7 +75,7 @@ public void OnPluginStart() {
     g_hHTTPClient.SetHeader("User-Agent",   szUserAgent);
     DebugMessage("OnPluginStart(): Created HTTP Client with defined Content-Type and User-Agent.")
 
-    DebugMessage("Discord Extended Library initialized (version %s, build date %s %s)", PLUGIN_VERSION, __DATE__, __TIME__)
+    DebugMessage("Discord Extended Library initialized (version " .. PLUGIN_VERSION .. ", build date ".. __DATE__ .. " " .. __TIME__ .. ")")
 }
 
 public void OnMapStart() {
@@ -94,7 +94,17 @@ public void OnNextTick(any data) {
     Discord_CancelMessage();
 }
 
-public void OnRequestComplete(HTTPResponse Response, any value) {
+public void OnRequestComplete(HTTPResponse Response, DataPack hPack, const char[] szError) {
+    if (szError[0] != 0) {
+        LogError("Error received when processing webhook: %s", szError);
+        CreateTimer(30.0, OnRetryRequest, hPack);
+        return;
+    }
+
+    hPack.Reset();
+    CloseHandle(hPack.ReadCell());
+    delete hPack;
+
     DebugMessage("OnRequestComplete(): Status %d", Response.Status)
 
 #if defined DEBUG_MODE
@@ -104,4 +114,14 @@ public void OnRequestComplete(HTTPResponse Response, any value) {
         CloseHandle(hJSON);
     }
 #endif
+}
+
+DataTimer(OnRetryRequest) {
+    ResetPack(data);
+    char szRequest[256];
+
+    JSONObject hRequest = ReadPackCell(data);
+    ReadPackString(data, szRequest, sizeof(szRequest));
+
+    g_hHTTPClient.Post(szRequest, hRequest, OnRequestComplete, data);
 }

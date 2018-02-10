@@ -42,12 +42,12 @@ Handle      g_hWebHooks;        // <-- StringMap
 HTTPClient  g_hHTTPClient;      // <-- HTTP Client
 bool        g_bFirstConfigLoad;
 
-#include "discord/Constants.sp" // +
-#include "discord/Debugger.sp"  // +
-#include "discord/Events.sp"    // +
-#include "discord/Config.sp"    // +
-#include "discord/UTIL.sp"      // +
-#include "discord/API.sp"       // +
+#include "discord/Constants.sp"
+#include "discord/Debugger.sp"
+#include "discord/Events.sp"
+#include "discord/Config.sp"
+#include "discord/UTIL.sp"
+#include "discord/API.sp"
 
 public Plugin myinfo = {
     url         = PLUGIN_URL,
