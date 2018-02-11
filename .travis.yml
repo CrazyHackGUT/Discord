@@ -21,9 +21,9 @@ before_script:
     - tar -xzf sourcemod.tar.gz
     - cd addons/sourcemod/scripting/
     - mkdir include/ripext
-    - curl "https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext.inc" -o include/ripext.inc
-    - curl "https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext/http.inc" -o include/ripext/http.inc
-    - curl "https://raw.githubusercontent.com/ErikMinekus/sm-ripext/master/pawn/scripting/include/ripext/json.inc" -o include/ripext/json.inc
+    - curl "https://raw.githubusercontent.com/CrazyHackGUT/sm-ripext/master/pawn/scripting/include/ripext.inc" -o include/ripext.inc
+    - curl "https://raw.githubusercontent.com/CrazyHackGUT/sm-ripext/master/pawn/scripting/include/ripext/http.inc" -o include/ripext/http.inc
+    - curl "https://raw.githubusercontent.com/CrazyHackGUT/sm-ripext/master/pawn/scripting/include/ripext/json.inc" -o include/ripext/json.inc
     - curl "https://raw.githubusercontent.com/sbpp/sourcebans-pp/v1.x/game/addons/sourcemod/scripting/include/sourcebans.inc" -o include/sourcebans.inc
     - curl "https://raw.githubusercontent.com/sbpp/sourcebans-pp/v1.x/game/addons/sourcemod/scripting/include/sourcecomms.inc" -o include/sourcecomms.inc
     - chmod +x spcomp
