@@ -33,14 +33,13 @@
 
 #if defined DEBUG_MODE
 stock void DebugMsg(const char[] sMsg, any ...) {
-    static char szDebugLogFile[PLATFORM_MAX_PATH];
-    if (!szDebugLogFile[0]) {
-        BuildPath(Path_SM, SZF(szDebugLogFile), "logs/Discord_Debug.log");
-    }
+  static char szDebugLogFile[PLATFORM_MAX_PATH];
+  if (!szDebugLogFile[0])
+    BuildPath(Path_SM, SZF(szDebugLogFile), "logs/Discord_Debug.log");
 
-    static char sBuffer[4096];
-    VFormat(sBuffer, sizeof(sBuffer), sMsg, 2);
-    LogToFile(szDebugLogFile, sBuffer);
+  static char sBuffer[4096];
+  VFormat(sBuffer, sizeof(sBuffer), sMsg, 2);
+  LogToFile(szDebugLogFile, sBuffer);
 }
 #define DebugMessage(%0) DebugMsg(%0);
 #else

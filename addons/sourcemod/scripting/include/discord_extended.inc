@@ -130,33 +130,33 @@ native void Discord_ReloadConfig();
 native bool Discord_BindWebHook(const char[] szName, const char[] szURL);
 
 public SharedPlugin __pl_discord_extended = {
-    name = "discord_extended",
-    file = "discord/Core.smx",
+  name = "discord_extended",
+  file = "discord/Core.smx",
 #if defined REQUIRE_PLUGIN
-    required = 1,
+  required = 1,
 #else
-    required = 0,
+  required = 0,
 #endif
 };
 
 #if !defined REQUIRE_PLUGIN
 public __pl_discord_extended_SetNTVOptional() {
-    MarkNativeAsOptional("Discord_CancelMessage");
-    MarkNativeAsOptional("Discord_StartMessage");
-    MarkNativeAsOptional("Discord_SetUsername");
-    MarkNativeAsOptional("Discord_EndMessage");
-    MarkNativeAsOptional("Discord_SetContent");
-    MarkNativeAsOptional("Discord_SetAvatar");
-    MarkNativeAsOptional("Discord_SetColor");
-    MarkNativeAsOptional("Discord_SetTitle");
-    MarkNativeAsOptional("Discord_AddField");
+  MarkNativeAsOptional("Discord_CancelMessage");
+  MarkNativeAsOptional("Discord_StartMessage");
+  MarkNativeAsOptional("Discord_SetUsername");
+  MarkNativeAsOptional("Discord_EndMessage");
+  MarkNativeAsOptional("Discord_SetContent");
+  MarkNativeAsOptional("Discord_SetAvatar");
+  MarkNativeAsOptional("Discord_SetColor");
+  MarkNativeAsOptional("Discord_SetTitle");
+  MarkNativeAsOptional("Discord_AddField");
 
-    // v1.0.2
-    MarkNativeAsOptional("Discord_WebHookExists");
-    MarkNativeAsOptional("Discord_ReloadConfig");
-    MarkNativeAsOptional("Discord_BindWebHook");
+  // v1.0.2
+  MarkNativeAsOptional("Discord_WebHookExists");
+  MarkNativeAsOptional("Discord_ReloadConfig");
+  MarkNativeAsOptional("Discord_BindWebHook");
 
-    // v1.0.4
-    MarkNativeAsOptional("Discord_IsMessageProcessing");
+  // v1.0.4
+  MarkNativeAsOptional("Discord_IsMessageProcessing");
 }
 #endif

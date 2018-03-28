@@ -50,97 +50,97 @@
 #pragma newdecls required
 
 #define _INTERNAL_SILENCE   3
-#define _INTERNAL_MUTE      1
-#define _INTERNAL_GAG       2
+#define _INTERNAL_MUTE    1
+#define _INTERNAL_GAG     2
 
-stock const char g_szSBUrlName[]    = "sm_discord_sburl";
+stock const char g_szSBUrlName[]  = "sm_discord_sburl";
 stock const char g_szSBHostName[]   = "sm_discord_sbhost";
 stock const char g_szSBBColorName[] = "sm_discord_sbbcolor";
 stock const char g_szSBCColorName[] = "sm_discord_sbccolor";
 
-#define _INTERNAL_COMMS     0
-#define _INTERNAL_BANS      1
+#define _INTERNAL_COMMS   0
+#define _INTERNAL_BANS    1
 #define _INTERNAL_CHANCOUNT 2
-stock const char    g_szChannelNames[][] = { "sourcecomms", "sourcebans" };
+stock const char  g_szChannelNames[][] = { "sourcecomms", "sourcebans" };
 
 public Plugin myinfo = {
-    description = "SourceBans + SourceComms / MaterialAdmin module for Discord Extended Library.",
-    version     = "1.2.2",
-    author      = "CrazyHackGUT aka Kruzya",
-    name        = "[Discord] SourceBans + SourceComms",
-    url         = "https://github.com/CrazyHackGUT/Discord"
+  description = "SourceBans + SourceComms / MaterialAdmin module for Discord Extended Library.",
+  version   = "1.2.2",
+  author    = "CrazyHackGUT aka Kruzya",
+  name    = "[Discord] SourceBans + SourceComms",
+  url     = "https://github.com/CrazyHackGUT/Discord"
 };
 
-char    g_szSite[256];
-int     g_iCommsColor;
-int     g_iBansColor;
-bool    g_bHostname;
+char  g_szSite[256];
+int   g_iCommsColor;
+int   g_iBansColor;
+bool  g_bHostname;
 
 /**
  * Events.
  */
 public void OnPluginStart() {
-    HookConVarChange(
-        CreateConVar(
-            g_szSBUrlName,
-            "https://bans.myproject.ru/",
-            "SourceBans Site URL"
-        ),
-        OnURLChanged
-    );
+  HookConVarChange(
+    CreateConVar(
+      g_szSBUrlName,
+      "https://bans.myproject.ru/",
+      "SourceBans Site URL"
+    ),
+    OnURLChanged
+  );
 
-    HookConVarChange(
-        CreateConVar(
-            g_szSBHostName, "1",
-            "Adds Hostname to ban/mute info?",
-            _, true, 0.0, true, 1.0
-        ),
-        OnHostChanged
-    );
+  HookConVarChange(
+    CreateConVar(
+      g_szSBHostName, "1",
+      "Adds Hostname to ban/mute info?",
+      _, true, 0.0, true, 1.0
+    ),
+    OnHostChanged
+  );
 
-    HookConVarChange(
-        CreateConVar(
-            g_szSBBColorName, "BE0000",
-            "Color for Bans Information"
-        ),
-        OnBansColorChanged
-    );
+  HookConVarChange(
+    CreateConVar(
+      g_szSBBColorName, "BE0000",
+      "Color for Bans Information"
+    ),
+    OnBansColorChanged
+  );
 
-    HookConVarChange(
-        CreateConVar(
-            g_szSBCColorName, "0094FF",
-            "Color for Comms Information"
-        ),
-        OnCommsColorChanged
-    );
+  HookConVarChange(
+    CreateConVar(
+      g_szSBCColorName, "0094FF",
+      "Color for Comms Information"
+    ),
+    OnCommsColorChanged
+  );
 
-    AutoExecConfig(true, "SourceBans", "Discord");
+  AutoExecConfig(true, "sourcebans", "discord");
 }
 
 public void OnConfigsExecuted() {
-    OnURLChanged(FindConVar(g_szSBUrlName), NULL_STRING, NULL_STRING);
-    OnHostChanged(FindConVar(g_szSBHostName), NULL_STRING, NULL_STRING);
-    OnBansColorChanged(FindConVar(g_szSBBColorName), NULL_STRING, NULL_STRING);
-    OnCommsColorChanged(FindConVar(g_szSBCColorName), NULL_STRING, NULL_STRING);
+  OnURLChanged(FindConVar(g_szSBUrlName), NULL_STRING, NULL_STRING);
+  OnHostChanged(FindConVar(g_szSBHostName), NULL_STRING, NULL_STRING);
+  OnBansColorChanged(FindConVar(g_szSBBColorName), NULL_STRING, NULL_STRING);
+  OnCommsColorChanged(FindConVar(g_szSBCColorName), NULL_STRING, NULL_STRING);
 }
 
 /**
  * ConVars hooks.
  */
 public void OnURLChanged(Handle hCvar, const char[] szOld, const char[] szNew) {
-    GetConVarString(hCvar, g_szSite, sizeof(g_szSite));
+  GetConVarString(hCvar, g_szSite, sizeof(g_szSite));
 }
 
 public void OnHostChanged(Handle hCvar, const char[] szOld, const char[] szNew) {
-    g_bHostname = GetConVarBool(hCvar);
+  g_bHostname = GetConVarBool(hCvar);
 }
 
 public void OnBansColorChanged(Handle hCvar, const char[] szOld, const char[] szNew) {
-    g_iBansColor = UTIL_GetColorFromHEX(hCvar);
+  g_iBansColor = UTIL_GetColorFromHEX(hCvar);
 }
 
 public void OnCommsColorChanged(Handle hCvar, const char[] szOld, const char[] szNew) {
-    g_iCommsColor = UTIL_GetColorFromHEX(hCvar);
+  g_iCommsColor = UTIL_GetColorFromHEX(hCvar);
 }
 
 #if defined _sourcebans_included
@@ -148,11 +148,11 @@ public void OnCommsColorChanged(Handle hCvar, const char[] szOld, const char[] s
  * SourceBans
  */
 public int SourceBans_OnBanPlayer(int client, int target, int time, char[] reason) {
-    if (!UTIL_IsReadyToSend()) {
-        return;
-    }
+  if (!UTIL_IsReadyToSend()) {
+    return;
+  }
 
-    OnBanAdded(client, target, time, reason);
+  OnBanAdded(client, target, time, reason);
 }
 #endif
 
@@ -161,11 +161,11 @@ public int SourceBans_OnBanPlayer(int client, int target, int time, char[] reaso
  * SourceComms
  */
 public int SourceComms_OnBlockAdded(int iClient, int iTarget, int iTime, int iType, char[] szReason) {
-    if (iType > 3 || !UTIL_IsReadyToSend()) {
-        return;
-    }
+  if (iType > 3 || !UTIL_IsReadyToSend()) {
+    return;
+  }
 
-    OnBlockAdded(iClient, iTarget, iTime, iType, szReason);
+  OnBlockAdded(iClient, iTarget, iTime, iType, szReason);
 }
 #endif
 
@@ -174,142 +174,142 @@ public int SourceComms_OnBlockAdded(int iClient, int iTarget, int iTime, int iTy
  * Material Admin
  */
 public void MAOnClientMuted(int iClient, int iTarget, char[] sIp, char[] sSteamID, char[] sName, int iType, int iTime, char[] sReason) {
-    if (iTarget == 0 || !UTIL_IsReadyToSend()) {
-        return;
-    }
+  if (iTarget == 0 || !UTIL_IsReadyToSend()) {
+    return;
+  }
 
-    switch (iType) {
-        case MA_GAG:        iType = _INTERNAL_GAG;
-        case MA_MUTE:       iType = _INTERNAL_MUTE;
-        case MA_SILENCE:    iType = _INTERNAL_SILENCE;
-    }
+  switch (iType) {
+    case MA_GAG:      iType = _INTERNAL_GAG;
+    case MA_MUTE:     iType = _INTERNAL_MUTE;
+    case MA_SILENCE:  iType = _INTERNAL_SILENCE;
+  }
 
-    OnBlockAdded(iClient, iTarget, iTime, iType, sReason);
+  OnBlockAdded(iClient, iTarget, iTime, iType, sReason);
 }
 
 public void MAOnClientBanned(int iClient, int iTarget, char[] sIp, char[] sSteamID, char[] sName, int iTime, char[] sReason) {
-    if (iTarget == 0) {
-        return;
-    }
+  if (iTarget == 0) {
+    return;
+  }
 
-    OnBanAdded(iClient, iTarget, iTime, sReason);
+  OnBanAdded(iClient, iTarget, iTime, sReason);
 }
 #endif
 
 void UTIL_FormatTime(int iTime, char[] szBuffer, int iMaxLength) {
-    int days = iTime / (60 * 60 * 24);
-    int hours = (iTime - (days * (60 * 60 * 24))) / (60 * 60);
-    int minutes = (iTime - (days * (60 * 60 * 24)) - (hours * (60 * 60))) / 60;
-    int len;
+  int days = iTime / (60 * 60 * 24);
+  int hours = (iTime - (days * (60 * 60 * 24))) / (60 * 60);
+  int minutes = (iTime - (days * (60 * 60 * 24)) - (hours * (60 * 60))) / 60;
+  int len;
 
-    if (days) {
-        len += Format(szBuffer[len], iMaxLength - len, "%d %s", days, "days");
-    }
+  if (days) {
+    len += Format(szBuffer[len], iMaxLength - len, "%d %s", days, "days");
+  }
 
-    if (hours) {
-        len += Format(szBuffer[len], iMaxLength - len, "%s%d %s", days ? " " : "", hours, "hours");
-    }
+  if (hours) {
+    len += Format(szBuffer[len], iMaxLength - len, "%s%d %s", days ? " " : "", hours, "hours");
+  }
 
-    if (minutes) {
-        len += Format(szBuffer[len], iMaxLength - len, "%s%d %s", (days || hours) ? " " : "", minutes, "minutes");
-    }
+  if (minutes) {
+    len += Format(szBuffer[len], iMaxLength - len, "%s%d %s", (days || hours) ? " " : "", minutes, "minutes");
+  }
 }
 
 int UTIL_GetColorFromHEX(Handle hCvar) {
-    char szBuffer[10];
-    GetConVarString(hCvar, szBuffer, sizeof(szBuffer));
-    return UTIL_HEX2DEC(szBuffer);
+  char szBuffer[10];
+  GetConVarString(hCvar, szBuffer, sizeof(szBuffer));
+  return UTIL_HEX2DEC(szBuffer);
 }
 
 int UTIL_HEX2DEC(const char[] szHEX) {
-    int iResult = 0;
+  int iResult = 0;
 
-    for (int i; i<strlen(szHEX); i++) {
-        char c = szHEX[i];
+  for (int i; i<strlen(szHEX); i++) {
+    char c = szHEX[i];
 
-        if (c >= 48 && c <= 57) {
-            c -= 48;
-        } else if (c >= 65 && c <= 70) {
-            c = (c - 65) + 10;
-        } else if (c >= 97 && c <= 102) {
-            c = (c - 97) + 10;
-        }
-
-        iResult = (iResult << 4) + c;
+    if (c >= 48 && c <= 57) {
+      c -= 48;
+    } else if (c >= 65 && c <= 70) {
+      c = (c - 65) + 10;
+    } else if (c >= 97 && c <= 102) {
+      c = (c - 97) + 10;
     }
 
-    return iResult;
+    iResult = (iResult << 4) + c;
+  }
+
+  return iResult;
 }
 
 void UTIL_AddHeader(int iAdmin, int iTarget, int iTime) {
-    char szBuffer[2][256];
+  char szBuffer[2][256];
 
-    // Server Hostname, if enabled
-    if (g_bHostname) {
-        GetConVarString(FindConVar("hostname"), szBuffer[0], sizeof(szBuffer[]));
-        Discord_AddField("Server name", szBuffer[0]);
-    }
+  // Server Hostname, if enabled
+  if (g_bHostname) {
+    GetConVarString(FindConVar("hostname"), szBuffer[0], sizeof(szBuffer[]));
+    Discord_AddField("Server name", szBuffer[0]);
+  }
 
-    // Admin information
-    GetClientName(iTarget, szBuffer[0], sizeof(szBuffer[]));
-    GetClientAuthId(iTarget, AuthId_SteamID64, szBuffer[1], sizeof(szBuffer[]));
+  // Admin information
+  GetClientName(iTarget, szBuffer[0], sizeof(szBuffer[]));
+  GetClientAuthId(iTarget, AuthId_SteamID64, szBuffer[1], sizeof(szBuffer[]));
+  Format(szBuffer[0], sizeof(szBuffer[]), "**[%s](https://steamcommunity.com/profiles/%s)**", szBuffer[0], szBuffer[1]);
+  Discord_AddField("Player", szBuffer[0], true);
+
+  // Admin information
+  if (iAdmin > 0 && IsClientInGame(iAdmin)) {
+    GetClientName(iAdmin, szBuffer[0], sizeof(szBuffer[]));
+    GetClientAuthId(iAdmin, AuthId_SteamID64, szBuffer[1], sizeof(szBuffer[]));
     Format(szBuffer[0], sizeof(szBuffer[]), "**[%s](https://steamcommunity.com/profiles/%s)**", szBuffer[0], szBuffer[1]);
-    Discord_AddField("Player", szBuffer[0], true);
+  } else {
+    strcopy(szBuffer[0], sizeof(szBuffer[]), "CONSOLE");
+  }
+  Discord_AddField("Administrator", szBuffer[0], true);
 
-    // Admin information
-    if (iAdmin > 0 && IsClientInGame(iAdmin)) {
-        GetClientName(iAdmin, szBuffer[0], sizeof(szBuffer[]));
-        GetClientAuthId(iAdmin, AuthId_SteamID64, szBuffer[1], sizeof(szBuffer[]));
-        Format(szBuffer[0], sizeof(szBuffer[]), "**[%s](https://steamcommunity.com/profiles/%s)**", szBuffer[0], szBuffer[1]);
-    } else {
-        strcopy(szBuffer[0], sizeof(szBuffer[]), "CONSOLE");
-    }
-    Discord_AddField("Administrator", szBuffer[0], true);
-
-    // Time
-    if (iTime == 0) {
-        strcopy(szBuffer[0], sizeof(szBuffer[]), "Permanent");
-    } else {
-        UTIL_FormatTime(iTime * 60, szBuffer[0], sizeof(szBuffer[]));
-    }
-    Discord_AddField("Length", szBuffer[0], true);
+  // Time
+  if (iTime == 0) {
+    strcopy(szBuffer[0], sizeof(szBuffer[]), "Permanent");
+  } else {
+    UTIL_FormatTime(iTime * 60, szBuffer[0], sizeof(szBuffer[]));
+  }
+  Discord_AddField("Length", szBuffer[0], true);
 }
 
 void OnBlockAdded(int iClient, int iTarget, int iTime, int iType, char[] szReason) {
-    Discord_StartMessage();
-    Discord_SetUsername("SourceComms");
-    Discord_SetTitle(g_szSite, "Open SourceComms Site");
-    Discord_SetColor(g_iCommsColor);
-    UTIL_AddHeader(iClient, iTarget, iTime);
+  Discord_StartMessage();
+  Discord_SetUsername("SourceComms");
+  Discord_SetTitle(g_szSite, "Open SourceComms Site");
+  Discord_SetColor(g_iCommsColor);
+  UTIL_AddHeader(iClient, iTarget, iTime);
 
-    char szBuffer[256];
+  char szBuffer[256];
 
-    switch (iType) {
-        case _INTERNAL_SILENCE:  strcopy(szBuffer, sizeof(szBuffer), "Voice + Text Chat");
-        case _INTERNAL_MUTE:     strcopy(szBuffer, sizeof(szBuffer), "Voice Chat");
-        case _INTERNAL_GAG:      strcopy(szBuffer, sizeof(szBuffer), "Text Chat");
-    }
+  switch (iType) {
+    case _INTERNAL_SILENCE: strcopy(szBuffer, sizeof(szBuffer), "Voice + Text Chat");
+    case _INTERNAL_MUTE:    strcopy(szBuffer, sizeof(szBuffer), "Voice Chat");
+    case _INTERNAL_GAG:     strcopy(szBuffer, sizeof(szBuffer), "Text Chat");
+  }
 
-    Discord_AddField("Punishment Type", szBuffer, true);
-    Discord_AddField("Reason", szReason[0] ? szReason : "*No reason specified*", true);
-    Discord_EndMessage(Discord_WebHookExists(g_szChannelNames[_INTERNAL_COMMS]) ? g_szChannelNames[_INTERNAL_COMMS] : g_szChannelNames[_INTERNAL_BANS], true);
+  Discord_AddField("Punishment Type", szBuffer, true);
+  Discord_AddField("Reason", szReason[0] ? szReason : "*No reason specified*", true);
+  Discord_EndMessage(Discord_WebHookExists(g_szChannelNames[_INTERNAL_COMMS]) ? g_szChannelNames[_INTERNAL_COMMS] : g_szChannelNames[_INTERNAL_BANS], true);
 }
 
 void OnBanAdded(int iClient, int iTarget, int iTime, const char[] szReason) {
-    Discord_StartMessage();
-    Discord_SetUsername("SourceBans");
-    Discord_SetTitle(g_szSite, "Open SourceBans Site");
-    Discord_SetColor(g_iBansColor);
+  Discord_StartMessage();
+  Discord_SetUsername("SourceBans");
+  Discord_SetTitle(g_szSite, "Open SourceBans Site");
+  Discord_SetColor(g_iBansColor);
 
-    UTIL_AddHeader(iClient, iTarget, iTime);
+  UTIL_AddHeader(iClient, iTarget, iTime);
 
-    Discord_AddField("Reason", szReason[0] ? szReason : "*No reason specified*", true);
-    Discord_EndMessage(g_szChannelNames[_INTERNAL_BANS], true);
+  Discord_AddField("Reason", szReason[0] ? szReason : "*No reason specified*", true);
+  Discord_EndMessage(g_szChannelNames[_INTERNAL_BANS], true);
 }
 
 bool UTIL_IsReadyToSend() {
-    return (
-        Discord_WebHookExists("default") ||
-        Discord_WebHookExists(g_szChannelNames[_INTERNAL_BANS])
-    );
+  return (
+    Discord_WebHookExists("default") ||
+    Discord_WebHookExists(g_szChannelNames[_INTERNAL_BANS])
+  );
 }

@@ -50,9 +50,9 @@ bool        g_bFirstConfigLoad;
 #include "discord/API.sp"
 
 public Plugin myinfo = {
-    url         = PLUGIN_URL,
-    name        = PLUGIN_NAME,
-    author      = PLUGIN_AUTHOR,
-    version     = PLUGIN_VERSION,
-    description = PLUGIN_DESCRIPTION
+  url         = PLUGIN_URL,
+  name        = PLUGIN_NAME,
+  author      = PLUGIN_AUTHOR,
+  version     = PLUGIN_VERSION,
+  description = PLUGIN_DESCRIPTION
 };

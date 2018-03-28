@@ -32,96 +32,96 @@
  */
 
 public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iErrMax) {
-    DebugMessage("AskPluginLoad2(): Called.")
+  DebugMessage("AskPluginLoad2(): Called.")
 
-    // Starting and ending for messages.
-    CreateNative("Discord_IsMessageProcessing", API_IsMessageProcessing);
-    CreateNative("Discord_CancelMessage",       API_CancelMessage);
-    CreateNative("Discord_StartMessage",        API_StartMessage);
-    CreateNative("Discord_EndMessage",          API_EndMessage);
+  // Starting and ending for messages.
+  CreateNative("Discord_IsMessageProcessing", API_IsMessageProcessing);
+  CreateNative("Discord_CancelMessage",     API_CancelMessage);
+  CreateNative("Discord_StartMessage",    API_StartMessage);
+  CreateNative("Discord_EndMessage",      API_EndMessage);
 
-    // Setting parameters for message.
-    CreateNative("Discord_SetUsername",         API_SetUsername);
-    CreateNative("Discord_SetAvatar",           API_SetAvatar); 
+  // Setting parameters for message.
+  CreateNative("Discord_SetUsername",     API_SetUsername);
+  CreateNative("Discord_SetAvatar",       API_SetAvatar); 
 
-    // Content.
-    CreateNative("Discord_SetContent",          API_SetContent);
-    CreateNative("Discord_SetColor",            API_SetColor);
-    CreateNative("Discord_SetTitle",            API_SetTitle);
-    CreateNative("Discord_AddField",            API_AddField);
+  // Content.
+  CreateNative("Discord_SetContent",      API_SetContent);
+  CreateNative("Discord_SetColor",      API_SetColor);
+  CreateNative("Discord_SetTitle",      API_SetTitle);
+  CreateNative("Discord_AddField",      API_AddField);
 
-    // WebHooks.
-    CreateNative("Discord_WebHookExists",       API_WebHookExists);
-    CreateNative("Discord_ReloadConfig",        API_ReloadConfig);
-    CreateNative("Discord_BindWebHook",         API_BindWebHook);
+  // WebHooks.
+  CreateNative("Discord_WebHookExists",     API_WebHookExists);
+  CreateNative("Discord_ReloadConfig",    API_ReloadConfig);
+  CreateNative("Discord_BindWebHook",     API_BindWebHook);
 
-    RegPluginLibrary("discord_extended");
+  RegPluginLibrary("discord_extended");
 }
 
 public void OnPluginStart() {
-    DebugMessage("OnPluginStart(): Called.")
+  DebugMessage("OnPluginStart(): Called.")
 
-    RegServerCmd("sm_reloaddiscord", Cmd_ReloadDiscord);
-    g_hWebHooks = CreateTrie();
+  RegServerCmd("sm_reloaddiscord", Cmd_ReloadDiscord);
+  g_hWebHooks = CreateTrie();
 
-    char szUserAgent[64];
-    FormatEx(SZF(szUserAgent), "SourcePawn (DiscordExtended v%s)", PLUGIN_VERSION);
-    DebugMessage("OnPluginStart(): Generated User-Agent: %s", szUserAgent)
+  char szUserAgent[64];
+  FormatEx(SZF(szUserAgent), "SourcePawn (DiscordExtended v%s)", PLUGIN_VERSION);
+  DebugMessage("OnPluginStart(): Generated User-Agent: %s", szUserAgent)
 
-    g_hHTTPClient = new HTTPClient("https://discordapp.com/api/webhooks");
+  g_hHTTPClient = new HTTPClient("https://discordapp.com/api/webhooks");
 
-    // This is not required. See https://github.com/CrazyHackGUT/sm-ripext/blob/master/curlapi.cpp#L41 for more details.
-    // g_hHTTPClient.SetHeader("Content-Type", "application/json");
-    g_hHTTPClient.SetHeader("User-Agent",   szUserAgent);
-    DebugMessage("OnPluginStart(): Created HTTP Client with defined Content-Type and User-Agent.")
+  // This is not required. See https://github.com/CrazyHackGUT/sm-ripext/blob/master/curlapi.cpp#L41 for more details.
+  // g_hHTTPClient.SetHeader("Content-Type", "application/json");
+  g_hHTTPClient.SetHeader("User-Agent",   szUserAgent);
+  DebugMessage("OnPluginStart(): Created HTTP Client with defined Content-Type and User-Agent.")
 
-    DebugMessage("Discord Extended Library initialized (version " .. PLUGIN_VERSION .. ", build date ".. __DATE__ .. " " .. __TIME__ .. ")")
+  DebugMessage("Discord Extended Library initialized (version " .. PLUGIN_VERSION .. ", build date ".. __DATE__ .. " " .. __TIME__ .. ")")
 }
 
 public void OnMapStart() {
-    DebugMessage("OnMapStart()")
-    Discord_Reload();
+  DebugMessage("OnMapStart()")
+  Discord_Reload();
 }
 
 public Action Cmd_ReloadDiscord(int iArgs) {
-    DebugMessage("Cmd_ReloadDiscord()")
-    Discord_Reload();
-    return Plugin_Handled;
+  DebugMessage("Cmd_ReloadDiscord()")
+  Discord_Reload();
+  return Plugin_Handled;
 }
 
 public void OnNextTick(any data) {
-    DebugMessage("OnNextTick()")
-    Discord_CancelMessage();
+  DebugMessage("OnNextTick()")
+  Discord_CancelMessage();
 }
 
 public void OnRequestComplete(HTTPResponse Response, DataPack hPack, const char[] szError) {
-    if (szError[0] != 0) {
-        LogError("Error received when processing webhook: %s", szError);
-        CreateTimer(30.0, OnRetryRequest, hPack);
-        return;
-    }
+  if (szError[0] != 0) {
+    LogError("Error received when processing webhook: %s", szError);
+    CreateTimer(30.0, OnRetryRequest, hPack);
+    return;
+  }
 
-    hPack.Reset();
-    CloseHandle(hPack.ReadCell());
-    delete hPack;
+  hPack.Reset();
+  CloseHandle(hPack.ReadCell());
+  delete hPack;
 
-    DebugMessage("OnRequestComplete(): Status %d", Response.Status)
+  DebugMessage("OnRequestComplete(): Status %d", Response.Status)
 
 #if defined DEBUG_MODE
-    JSON hJSON = Response.Data;
-    if (hJSON) {
-        UTIL_JSONDUMP(hJSON);
-        CloseHandle(hJSON);
-    }
+  JSON hJSON = Response.Data;
+  if (hJSON) {
+    UTIL_JSONDUMP(hJSON);
+    CloseHandle(hJSON);
+  }
 #endif
 }
 
 DataTimer(OnRetryRequest) {
-    ResetPack(data);
-    char szRequest[256];
+  ResetPack(data);
+  char szRequest[256];
 
-    JSONObject hRequest = ReadPackCell(data);
-    ReadPackString(data, szRequest, sizeof(szRequest));
+  JSONObject hRequest = ReadPackCell(data);
+  ReadPackString(data, szRequest, sizeof(szRequest));
 
-    g_hHTTPClient.Post(szRequest, hRequest, OnRequestComplete, data);
+  g_hHTTPClient.Post(szRequest, hRequest, OnRequestComplete, data);
 }

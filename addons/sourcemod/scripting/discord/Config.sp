@@ -32,65 +32,65 @@
  */
 
 void Discord_Reload() {
-    static char szConfig[PLATFORM_MAX_PATH];
-    if (!szConfig[0]) {
-        BuildPath(Path_SM, szConfig, sizeof(szConfig), "configs/Discord.cfg");
-    }
+  static char szConfig[PLATFORM_MAX_PATH];
+  if (!szConfig[0]) {
+    BuildPath(Path_SM, szConfig, sizeof(szConfig), "configs/Discord.cfg");
+  }
 
-    DebugMessage("Discord_Reload(): Started.")
+  DebugMessage("Discord_Reload(): Started.")
 
-    if (!FileExists(szConfig)) {
-        Discord_Generate(szConfig);
-    }
+  if (!FileExists(szConfig)) {
+    Discord_Generate(szConfig);
+  }
 
-    ClearTrie(g_hWebHooks);
-    DebugMessage("Discord_Reload(): Cleared existing WebHooks.")
+  ClearTrie(g_hWebHooks);
+  DebugMessage("Discord_Reload(): Cleared existing WebHooks.")
 
-    Handle hSMC = SMC_CreateParser();
-    SMC_SetReaders(hSMC, SMC_ns, SMC_kv, SMC_es);
+  Handle hSMC = SMC_CreateParser();
+  SMC_SetReaders(hSMC, SMC_ns, SMC_kv, SMC_es);
 
-    SMCError eResult = SMC_ParseFile(hSMC, szConfig);
-    delete hSMC;
+  SMCError eResult = SMC_ParseFile(hSMC, szConfig);
+  delete hSMC;
 
-    if (eResult == SMCError_Okay) {
-        g_bFirstConfigLoad = true;
-        return;
-    }
+  if (eResult == SMCError_Okay) {
+    g_bFirstConfigLoad = true;
+    return;
+  }
 
-    SetFailState("Couldn't parse configuration file %s, error code %d", szConfig, eResult);
+  SetFailState("Couldn't parse configuration file %s, error code %d", szConfig, eResult);
 }
 
 void Discord_Generate(const char[] szConfig) {
-    DebugMessage("Discord_Generate(): Started. We generate content for file %s.", szConfig)
-    Handle hFile = OpenFile(szConfig, "wt");
-    if (hFile == null) {
-        SetFailState("Couldn't create Discord Config example: %s", szConfig);
-        return;
-    }
+  DebugMessage("Discord_Generate(): Started. We generate content for file %s.", szConfig)
+  Handle hFile = OpenFile(szConfig, "wt");
+  if (hFile == null) {
+    SetFailState("Couldn't create Discord Config example: %s", szConfig);
+    return;
+  }
 
-    WriteFileLine(hFile, "// This is configuration example for Discord API");
-    WriteFileLine(hFile, "// If you need add your own webhook for another plugin / module, just add:");
-    WriteFileLine(hFile, "// \"mymodule\"  \"mywebhook\"");
-    WriteFileLine(hFile, "// Without \"//\"");
-    WriteFileLine(hFile, "//");
-    WriteFileLine(hFile, "// Generated automatically %d, because configuration file not found", GetTime());
-    WriteFileLine(hFile, "\"Discord\"");
-    WriteFileLine(hFile, "{");
-    WriteFileLine(hFile, "    \"default\"  \"\" // <-- put default webhook here. also you can remove this key-value pair.");
-    WriteFileLine(hFile, "}");
-    CloseHandle(hFile);
+  WriteFileLine(hFile, "// This is configuration example for Discord API");
+  WriteFileLine(hFile, "// If you need add your own webhook for another plugin / module, just add:");
+  WriteFileLine(hFile, "// \"mymodule\"  \"mywebhook\"");
+  WriteFileLine(hFile, "// Without \"//\"");
+  WriteFileLine(hFile, "//");
+  WriteFileLine(hFile, "// Generated automatically %d, because configuration file not found", GetTime());
+  WriteFileLine(hFile, "\"Discord\"");
+  WriteFileLine(hFile, "{");
+  WriteFileLine(hFile, "  \"default\"  \"\" // <-- put default webhook here. also you can remove this key-value pair.");
+  WriteFileLine(hFile, "}");
+  CloseHandle(hFile);
 
-    DebugMessage("Discord_Generate(): Done. Closed File resource %x.", hFile)
+  DebugMessage("Discord_Generate(): Done. Closed File resource %x.", hFile)
 }
 
 public SMCResult SMC_ns(Handle hSMC, const char[] szName, bool bOptQuotes) {}
 public SMCResult SMC_es(Handle hSMC) {}
 public SMCResult SMC_kv(Handle hSMC, const char[] szKey, const char[] szValue, bool bKeyQuotes, bool bValueQuotes) {
-    DebugMessage("SMC_kv(): Key %s, Value %s", szKey, szValue)
-    bool bResult = UTIL_AddWebHook(szKey, szValue, true);
-    if (!strcmp(szKey, "default", true)) {
-        // Fail allowed. Sometimes `default` webhook leaves empty.
-        return SMCParse_Continue;
-    }
-    return bResult ? SMCParse_Continue : SMCParse_HaltFail;
+  DebugMessage("SMC_kv(): Key %s, Value %s", szKey, szValue)
+  bool bResult = UTIL_AddWebHook(szKey, szValue, true);
+  if (!strcmp(szKey, "default", true)) {
+    // Fail allowed. Sometimes `default` webhook leaves empty.
+    return SMCParse_Continue;
+  }
+  return bResult ? SMCParse_Continue : SMCParse_HaltFail;
 }
