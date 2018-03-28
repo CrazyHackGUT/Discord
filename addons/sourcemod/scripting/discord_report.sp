@@ -53,7 +53,7 @@ public Plugin myinfo = {
     version     = "1.2",
     author      = "CrazyHackGUT aka Kruzya",
     name        = "[Discord] Simple Report System",
-    url         = "https://kruzefag.ru/"
+    url         = "https://github.com/CrazyHackGUT/Discord"
 };
 
 /**

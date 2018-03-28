@@ -68,7 +68,7 @@ public Plugin myinfo = {
     version     = "1.2.2",
     author      = "CrazyHackGUT aka Kruzya",
     name        = "[Discord] SourceBans + SourceComms",
-    url         = "https://kruzefag.ru/"
+    url         = "https://github.com/CrazyHackGUT/Discord"
 };
 
 char    g_szSite[256];

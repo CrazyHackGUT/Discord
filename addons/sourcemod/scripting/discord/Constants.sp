@@ -35,7 +35,7 @@
 #define PLUGIN_VERSION      "1.0.5"
 #define PLUGIN_AUTHOR       "CrazyHackGUT aka Kruzya"
 #define PLUGIN_NAME         "[Discord] Core"
-#define PLUGIN_URL          "https://kruzefag.ru/"
+#define PLUGIN_URL          "https://github.com/CrazyHackGUT/Discord"
 
 #define PMP                 PLATFORM_MAX_PATH
 #define MPL                 MAXPLAYERS
