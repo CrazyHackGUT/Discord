@@ -51,7 +51,7 @@ int     g_iCooldown;
 
 public Plugin myinfo = {
   description = "Simple Report system. All reports sends into Discord server.",
-  version     = "1.2.1",
+  version     = "1.2.2",
   author      = "CrazyHackGUT aka Kruzya",
   name        = "[Discord] Simple Report System",
   url         = "https://github.com/CrazyHackGUT/Discord"
@@ -79,7 +79,7 @@ public void OnPluginStart() {
     OnClientPutInServer(i);
   }
   
-  g_hCooldown = CreateConVar(g_szConVar, "60", "Cooldown after sending a report (in seconds)", _, true, 0.0);
+  g_hCooldown = CreateConVar("sm_discord_report_cooldown", "60", "Cooldown after sending a report (in seconds)", _, true, 0.0);
   HookConVarChange(g_hCooldown, OnCooldownUpdated);
 
   g_hReasons = CreateArray(ByteCountToCells(256));
@@ -268,7 +268,7 @@ void UTIL_ProcessReport(int iClient, int iVictim, const char[] szReason) {
 
   // Notify client.
   PrintToChat(iClient, "[SM] %t", "Send");
-  g_iApprReport[iClient] = GetTime() + GetConVarInt(g_hCooldown);
+  g_iApprReport[iClient] = GetTime() + g_iCooldown;
 
   g_bReasonChat[iClient] = false;
   g_iVictim[iClient] = -1;
