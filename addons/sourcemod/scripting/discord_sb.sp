@@ -53,7 +53,7 @@
 #define _INTERNAL_MUTE    1
 #define _INTERNAL_GAG     2
 
-stock const char g_szSBUrlName[]  = "sm_discord_sburl";
+stock const char g_szSBUrlName[]    = "sm_discord_sburl";
 stock const char g_szSBHostName[]   = "sm_discord_sbhost";
 stock const char g_szSBBColorName[] = "sm_discord_sbbcolor";
 stock const char g_szSBCColorName[] = "sm_discord_sbccolor";
