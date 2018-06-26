@@ -160,7 +160,7 @@ public int SourceBans_OnBanPlayer(int client, int target, int time, char[] reaso
 /**
  * SourceComms
  */
-public int SourceComms_OnBlockAdded(int iClient, int iTarget, int iTime, int iType, char[] szReason) {
+public void SourceComms_OnBlockAdded(int iClient, int iTarget, int iTime, int iType, char[] szReason) {
   if (iType > 3 || !UTIL_IsReadyToSend()) {
     return;
   }
