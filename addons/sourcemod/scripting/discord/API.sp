@@ -44,13 +44,13 @@ void API_ValidateMsg() {
 }
 
 // Natives
-public int API_IsMessageProcessing(Handle hPlugin, int iNumParams) {
+NativeHandler(API_IsMessageProcessing) {
   DebugMessage("API_IsMessageProcessing()")
 
   return (g_hMessage != null) ? 1 : 0;
 }
 
-public int API_CancelMessage(Handle hPlugin, int iNumParams) {
+NativeHandler(API_CancelMessage) {
   DebugMessage("API_CancelMessage()")
   if (g_hMessage) {
     if (UTIL_StringMapKeyExists(g_hMessage, "fields")) {
@@ -69,7 +69,7 @@ public int API_CancelMessage(Handle hPlugin, int iNumParams) {
   }
 }
 
-public int API_StartMessage(Handle hPlugin, int iNumParams) {
+NativeHandler(API_StartMessage) {
   DebugMessage("API_StartMessage()")
 
   if (g_hMessage != null) {
@@ -81,7 +81,7 @@ public int API_StartMessage(Handle hPlugin, int iNumParams) {
   RequestFrame(OnNextTick);
 }
 
-public int API_EndMessage(Handle hPlugin, int iNumParams) {
+NativeHandler(API_EndMessage) {
   DebugMessage("API_EndMessage()")
   API_ValidateMsg();
 
@@ -96,7 +96,7 @@ public int API_EndMessage(Handle hPlugin, int iNumParams) {
   Discord_CancelMessage();
 }
 
-public int API_SetUsername(Handle hPlugin, int iNumParams) {
+NativeHandler(API_SetUsername) {
   DebugMessage("API_SetUsername()")
   API_ValidateMsg();
 
@@ -111,7 +111,7 @@ public int API_SetUsername(Handle hPlugin, int iNumParams) {
   SetTrieString(g_hMessage, "username", szUsername);
 }
 
-public int API_SetAvatar(Handle hPlugin, int iNumParams) {
+NativeHandler(API_SetAvatar) {
   DebugMessage("API_SetAvatar()")
   API_ValidateMsg();
 
@@ -120,7 +120,7 @@ public int API_SetAvatar(Handle hPlugin, int iNumParams) {
   SetTrieString(g_hMessage, "avatar", szAvatar);
 }
 
-public int API_SetContent(Handle hPlugin, int iNumParams) {
+NativeHandler(API_SetContent) {
   DebugMessage("API_SetContent()")
   API_ValidateMsg();
 
@@ -135,14 +135,14 @@ public int API_SetContent(Handle hPlugin, int iNumParams) {
   SetTrieString(g_hMessage, "content", szMessage);
 }
 
-public int API_SetColor(Handle hPlugin, int iNumParams) {
+NativeHandler(API_SetColor) {
   DebugMessage("API_SetColor()")
   API_ValidateMsg();
 
   SetTrieValue(g_hMessage, "color", GetNativeCell(1));
 }
 
-public int API_SetTitle(Handle hPlugin, int iNumParams) {
+NativeHandler(API_SetTitle) {
   DebugMessage("API_SetTitle()")
   API_ValidateMsg();
 
@@ -165,7 +165,7 @@ public int API_SetTitle(Handle hPlugin, int iNumParams) {
   SetTrieString(g_hMessage, "title", szTitle);
 }
 
-public int API_AddField(Handle hPlugin, int iNumParams) {
+NativeHandler(API_AddField) {
   DebugMessage("API_AddField()")
   API_ValidateMsg();
 
@@ -191,7 +191,7 @@ public int API_AddField(Handle hPlugin, int iNumParams) {
   PushArrayCell(hArray, hMap);
 }
 
-public int API_WebHookExists(Handle hPlugin, int iNumParams) {
+NativeHandler(API_WebHookExists) {
   DebugMessage("API_WebHookExists()")
 
   if (g_bFirstConfigLoad == false) {
@@ -205,12 +205,12 @@ public int API_WebHookExists(Handle hPlugin, int iNumParams) {
   return (GetTrieString(g_hWebHooks, szBuffer, szRes, sizeof(szRes))) ? 1 : 0;
 }
 
-public int API_ReloadConfig(Handle hPlugin, int iNumParams) {
+NativeHandler(API_ReloadConfig) {
   DebugMessage("API_ReloadConfig()")
   Discord_Reload();
 }
 
-public int API_BindWebHook(Handle hPlugin, int iNumParams) {
+NativeHandler(API_BindWebHook) {
   DebugMessage("API_BindWebHook()")
 
   char szWebHookName[64];
@@ -220,4 +220,98 @@ public int API_BindWebHook(Handle hPlugin, int iNumParams) {
   GetNativeString(2, szURL,       sizeof(szURL));
 
   return UTIL_AddWebHook(szWebHookName, szURL, false) ? 1 : 0;
+}
+
+// v1.0.6
+NativeHandler(API_SetTimestamp) {
+  DebugMessage("API_SetTimestamp()")
+  API_ValidateMsg();
+
+  int iTime = GetNativeCell(1);
+  if (iTime < 0) {
+    RemoveFromTrie(g_hMessage, "timestamp");
+    return;
+  }
+
+  SetTrieValue(g_hMessage, "timestamp", iTime, true);
+}
+
+NativeHandler(API_SetAuthorImage) {
+  DebugMessage("API_SetAuthorImage()")
+  API_ValidateMsg();
+
+  char szURL[256];
+  GetNativeString(1, szURL, sizeof(szURL));
+
+  if (szURL[0] == 0) {
+    RemoveFromTrie(g_hMessage, "author_avatar");
+    return;
+  }
+
+  SetTrieString(g_hMessage, "author_avatar", szURL, true);
+}
+
+NativeHandler(API_SetAuthorName) {
+  DebugMessage("API_SetAuthorName()")
+  API_ValidateMsg();
+
+  char szAuthorName[256];
+  GetNativeString(1, szAuthorName, sizeof(szAuthorName));
+
+  if (szAuthorName[0] == 0) {
+    RemoveFromTrie(g_hMessage, "author_name");
+    return;
+  }
+
+  SetTrieString(g_hMessage, "author_name", szAuthorName, true);
+}
+
+NativeHandler(API_SetAuthorURL) {
+  DebugMessage("API_SetAuthorURL()")
+  API_ValidateMsg();
+
+  char szURL[256];
+  GetNativeString(1, szURL, sizeof(szURL));
+
+  if (szURL[0] == 0) {
+    RemoveFromTrie(g_hMessage, "author_url");
+    return;
+  }
+
+  SetTrieString(g_hMessage, "author_url", szURL, true);
+}
+
+NativeHandler(API_SetFooterImage) {
+  DebugMessage("API_SetFooterImage()")
+  API_ValidateMsg();
+
+  char szURL[256];
+  GetNativeString(1, szURL, sizeof(szURL));
+
+  if (szURL[0] == 0) {
+    RemoveFromTrie(g_hMessage, "footer_image");
+    return;
+  }
+
+  SetTrieString(g_hMessage, "footer_image", szURL, true);
+}
+
+NativeHandler(API_SetFooterText) {
+  DebugMessage("API_SetFooterText()")
+  API_ValidateMsg();
+
+  char szText[256];
+  if (iNumParams == 1) {
+    GetNativeString(1, szText, sizeof(szText));
+  } else {
+    int iWritten;
+    FormatNativeString(0, 1, 2, sizeof(szText), iWritten, szText);
+  }
+
+  if (szText[0] == 0) {
+    RemoveFromTrie(g_hMessage, "footer_text");
+    return;
+  }
+
+  SetTrieString(g_hMessage, "footer_text", szText, true);
 }

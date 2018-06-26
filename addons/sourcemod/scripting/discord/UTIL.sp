@@ -101,6 +101,21 @@ void UTIL_SendMessage(Handle hMap, const char[] szConfigName, bool bAllowedDefau
     hJSmsg.Set("fields", hArray);
   }
 
+
+  // Author (aka "Header") and Footer.
+  UTIL_DoHeaderLogic(hMap, hJSmsg, hCleanup, bAdd);
+  UTIL_DoFooterLogic(hMap, hJSmsg, hCleanup, bAdd);
+
+  // Timestamp.
+  int iTimestamp;
+  if (GetTrieValue(hMap, "timestamp", iTimestamp)) {
+    FormatTime(SZF(szBuffer), "%FT%TZ", iTimestamp);
+    hJSmsg.SetString("timestamp", szBuffer);
+    bAdd = true;
+
+    DebugMessage("UTIL_SendMessage(): Installed timestamp %d (%s).", iTimestamp, szBuffer)
+  }
+
   if (bAdd) {
     msg.Push(hJSmsg);
     DebugMessage("UTIL_SendMessage(): Attachment pushed to core JSON object.")
@@ -152,6 +167,78 @@ void UTIL_SendMessage(Handle hMap, const char[] szConfigName, bool bAllowedDefau
 #endif
 
   UTIL_Cleanup(hCleanup);
+}
+
+void UTIL_DoHeaderLogic(Handle hMap, JSONObject hJSmsg, Handle hCleanup, bool &bAdd) {
+  DebugMessage("UTIL_DoHeaderLogic()")
+
+  bool bDoAdd;
+  char szBuffer[256];
+  JSONObject hJSauthor = new JSONObject();
+  PushArrayCell(hCleanup, hJSauthor);
+
+  // Avatar.
+  if (GetTrieString(hMap, "author_avatar", SZF(szBuffer))) {
+    bDoAdd = true;
+    hJSauthor.SetString("icon_url", szBuffer);
+
+    DebugMessage("UTIL_DoHeaderLogic(): Installed author avatar %s.", szBuffer)
+  }
+
+  // Name.
+  if (GetTrieString(hMap, "author_name", SZF(szBuffer))) {
+    bDoAdd = true;
+    hJSauthor.SetString("name", szBuffer);
+
+    DebugMessage("UTIL_DoHeaderLogic(): Installed author name %s.", szBuffer)
+  }
+
+  // URL.
+  if (GetTrieString(hMap, "author_url", SZF(szBuffer))) {
+    bDoAdd = true;
+    hJSauthor.SetString("url", szBuffer);
+
+    DebugMessage("UTIL_DoHeaderLogic(): Installed author URL %s.", szBuffer)
+  }
+
+  if (bDoAdd) {
+    hJSmsg.Set("author", hJSauthor);
+    bAdd = true;
+
+    DebugMessage("UTIL_DoHeaderLogic(): Added author data.")
+  }
+}
+
+void UTIL_DoFooterLogic(Handle hMap, JSONObject hJSmsg, Handle hCleanup, bool &bAdd) {
+  DebugMessage("UTIL_DoHeaderLogic()")
+
+  bool bDoAdd;
+  char szBuffer[256];
+  JSONObject hJSfooter = new JSONObject();
+  PushArrayCell(hCleanup, hJSfooter);
+
+  // Image.
+  if (GetTrieString(hMap, "footer_image", SZF(szBuffer))) {
+    bDoAdd = true;
+    hJSfooter.SetString("icon_url", szBuffer);
+
+    DebugMessage("UTIL_DoFooterLogic(): Installed footer image %s.", szBuffer)
+  }
+
+  // Text.
+  if (GetTrieString(hMap, "footer_text", SZF(szBuffer))) {
+    bDoAdd = true;
+    hJSfooter.SetString("text", szBuffer);
+
+    DebugMessage("UTIL_DoFooterLogic(): Installed footer text %s.", szBuffer)
+  }
+
+  if (bDoAdd) {
+    hJSmsg.Set("footer", hJSfooter);
+    bAdd = true;
+
+    DebugMessage("UTIL_DoFooterLogic(): Added footer data.")
+  }
 }
 
 bool UTIL_StringMapKeyExists(Handle hStringMap, const char[] szKey) {

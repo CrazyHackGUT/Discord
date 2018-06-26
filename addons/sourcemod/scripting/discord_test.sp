@@ -5,6 +5,8 @@ public void OnPluginStart() {
   RegConsoleCmd("sm_discord_admins", Cmd_AdminsList);
   RegConsoleCmd("sm_discord_info", Cmd_ServerInfo);
   RegConsoleCmd("sm_discord_me", Cmd_InfoMe);
+
+  RegConsoleCmd("sm_discord_say", Cmd_Say);
 }
 
 /**
@@ -112,4 +114,35 @@ int GetAdminCount() {
   }
 
   return res;
+}
+
+public Action Cmd_Say(int iClient, int iArgC) {
+  if (iArgC == 0) {
+    ReplyToCommand(iClient, "[Discord] Usage: sm_discord_say <text>");
+    return Plugin_Handled;
+  }
+
+  char szBuffer[256];
+  GetClientName(iClient, szBuffer, sizeof(szBuffer));
+
+  Discord_StartMessage();
+  Discord_SetTimestamp(GetTime());
+  Discord_SetColor(0x6633FF);
+
+  Discord_SetUsername(szBuffer);
+  Discord_SetAuthorName(szBuffer);
+  Discord_SetAuthorImage("http://clipart-library.com/images/rTLo8LGxc.png");
+
+  {
+    int iPos = FormatEx(szBuffer, sizeof(szBuffer), "https://steamcommunity.com/profiles/");
+    GetClientAuthId(iClient, AuthId_SteamID64, szBuffer[iPos], sizeof(szBuffer)-iPos);
+    Discord_SetAuthorURL(szBuffer);
+  }
+
+  GetCmdArgString(szBuffer, sizeof(szBuffer));
+  Discord_AddField("Message Text", szBuffer, true);
+  Discord_SetFooterText("Sended: via sm_discord_say");
+  Discord_EndMessage("test", true);
+
+  return Plugin_Handled;
 }

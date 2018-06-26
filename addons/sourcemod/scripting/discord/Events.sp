@@ -35,25 +35,35 @@ public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iEr
   DebugMessage("AskPluginLoad2(): Called.")
 
   // Starting and ending for messages.
-  CreateNative("Discord_IsMessageProcessing", API_IsMessageProcessing);
-  CreateNative("Discord_CancelMessage",     API_CancelMessage);
-  CreateNative("Discord_StartMessage",    API_StartMessage);
-  CreateNative("Discord_EndMessage",      API_EndMessage);
+  CreateNative("Discord_IsMessageProcessing",   API_IsMessageProcessing);
+  CreateNative("Discord_CancelMessage",         API_CancelMessage);
+  CreateNative("Discord_StartMessage",          API_StartMessage);
+  CreateNative("Discord_EndMessage",            API_EndMessage);
 
   // Setting parameters for message.
-  CreateNative("Discord_SetUsername",     API_SetUsername);
-  CreateNative("Discord_SetAvatar",       API_SetAvatar); 
+  CreateNative("Discord_SetUsername",           API_SetUsername);
+  CreateNative("Discord_SetAvatar",             API_SetAvatar); 
 
   // Content.
-  CreateNative("Discord_SetContent",      API_SetContent);
-  CreateNative("Discord_SetColor",      API_SetColor);
-  CreateNative("Discord_SetTitle",      API_SetTitle);
-  CreateNative("Discord_AddField",      API_AddField);
+  CreateNative("Discord_SetTimestamp",          API_SetTimestamp);
+  CreateNative("Discord_SetContent",            API_SetContent);
+  CreateNative("Discord_SetColor",              API_SetColor);
+  CreateNative("Discord_SetTitle",              API_SetTitle);
+  CreateNative("Discord_AddField",              API_AddField);
 
   // WebHooks.
-  CreateNative("Discord_WebHookExists",     API_WebHookExists);
-  CreateNative("Discord_ReloadConfig",    API_ReloadConfig);
-  CreateNative("Discord_BindWebHook",     API_BindWebHook);
+  CreateNative("Discord_WebHookExists",         API_WebHookExists);
+  CreateNative("Discord_ReloadConfig",          API_ReloadConfig);
+  CreateNative("Discord_BindWebHook",           API_BindWebHook);
+
+  // Author.
+  CreateNative("Discord_SetAuthorImage",        API_SetAuthorImage);
+  CreateNative("Discord_SetAuthorName",         API_SetAuthorName);
+  CreateNative("Discord_SetAuthorURL",          API_SetAuthorURL);
+
+  // Footer.
+  CreateNative("Discord_SetFooterImage",        API_SetFooterImage);
+  CreateNative("Discord_SetFooterText",         API_SetFooterText);
 
   RegPluginLibrary("discord_extended");
 }
@@ -75,7 +85,7 @@ public void OnPluginStart() {
   g_hHTTPClient.SetHeader("User-Agent",   szUserAgent);
   DebugMessage("OnPluginStart(): Created HTTP Client with defined Content-Type and User-Agent.")
 
-  DebugMessage("Discord Extended Library initialized (version " .. PLUGIN_VERSION .. ", build date ".. __DATE__ .. " " .. __TIME__ .. ")")
+  DebugMessage("Discord Extended Library initialized (version " ... PLUGIN_VERSION ... ", build date "... __DATE__ ... " " ... __TIME__ ... ")")
 }
 
 public void OnMapStart() {

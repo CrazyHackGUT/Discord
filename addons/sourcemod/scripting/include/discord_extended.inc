@@ -84,6 +84,9 @@ native void Discord_SetColor(int iColor = 0xFFFFFF);
  * @param   szURL       URL. Leave empty (NULL_STRING, ""), if you don't need make title clickable item.
  * @param   szText      Text
  * @param   ...         Any format parameters for text.
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
  */
 native void Discord_SetTitle(const char[] szURL, const char[] szText, any ...);
 
@@ -98,6 +101,68 @@ native void Discord_SetTitle(const char[] szURL, const char[] szText, any ...);
  * @throws  Error, if message don't has been started.
  */
 native void Discord_AddField(const char[] szTitle, const char[] szValue, bool bInline = false);
+
+/**
+ * Setup a author name.
+ *
+ * @param   szName      Name
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
+ */
+native void Discord_SetAuthorName(const char[] szName);
+
+/**
+ * Setup a author image (avatar, photo).
+ *
+ * @param   szURL       URL to photo.
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
+ */
+native void Discord_SetAuthorImage(const char[] szURL);
+
+/**
+ * Setup a author URL.
+ *
+ * @param   szURL       URL-address.
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
+ */
+native void Discord_SetAuthorURL(const char[] szURL);
+
+/**
+ * Setup a message timestamp (see https://github.com/CrazyHackGUT/Discord/tree/master/.github/TimestampDescribe.png for more details)
+ *
+ * @param   iTime       Timestamp with start from UNIX epoch.
+ *                      Push any value less 0 (like -1) to delete timestamp.
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
+ */
+native void Discord_SetTimestamp(int iTimestamp = -1);
+
+/**
+ * Setup a footer text.
+ *
+ * @param   szText      Text.
+ * @param   ...         Any format parameters for text.
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
+ */
+native void Discord_SetFooterText(const char[] szText, any ...);
+
+/**
+ * Setup a footer image.
+ *
+ * @param   szURL       URL to image.
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
+ */
+native void Discord_SetFooterImage(const char[] szURL);
 
 /**
  * Checks for webhook availability.
@@ -158,5 +223,13 @@ public __pl_discord_extended_SetNTVOptional() {
 
   // v1.0.4
   MarkNativeAsOptional("Discord_IsMessageProcessing");
+
+  // v1.0.6
+  MarkNativeAsOptional("Discord_SetAuthorImage");
+  MarkNativeAsOptional("Discord_SetFooterImage");
+  MarkNativeAsOptional("Discord_SetAuthorName");
+  MarkNativeAsOptional("Discord_SetFooterText");
+  MarkNativeAsOptional("Discord_SetAuthorURL");
+  MarkNativeAsOptional("Discord_SetTimestamp");
 }
 #endif

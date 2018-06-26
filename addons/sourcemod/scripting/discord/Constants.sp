@@ -32,10 +32,10 @@
  */
 
 #define PLUGIN_DESCRIPTION  "Simpliest library for sending message on Discord Server with Discord WebHook"
-#define PLUGIN_VERSION      "1.0.5"
+#define PLUGIN_VERSION      "1.0.6"
 #define PLUGIN_AUTHOR       "CrazyHackGUT aka Kruzya"
 #define PLUGIN_NAME         "[Discord] Core"
-#define PLUGIN_URL          "https://github.com/CrazyHackGUT/Discord"
+#define PLUGIN_URL          "https://kruzya.me/go?token=7b029289092653cad845700556c940fd"
 
 #define PMP                 PLATFORM_MAX_PATH
 #define MPL                 MAXPLAYERS
@@ -48,6 +48,8 @@
 
 #define SimpleTimer(%0)     public Action %0(Handle hTimer)
 #define DataTimer(%0)       public Action %0(Handle hTimer, any data)
+
+#define NativeHandler(%0)   public int %0(Handle hPlugin, int iNumParams)
 
 // Enable this, if you have problems with sending messages
 // #define DEBUG_MODE
