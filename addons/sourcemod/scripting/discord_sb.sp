@@ -147,7 +147,7 @@ public void OnCommsColorChanged(Handle hCvar, const char[] szOld, const char[] s
 /**
  * SourceBans
  */
-public int SourceBans_OnBanPlayer(int client, int target, int time, char[] reason) {
+public int SourceBans_OnBanPlayer(int client, int target, int time, const char[] reason) {
   if (!UTIL_IsReadyToSend()) {
     return;
   }
