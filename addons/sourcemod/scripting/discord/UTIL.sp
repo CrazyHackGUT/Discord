@@ -109,11 +109,32 @@ void UTIL_SendMessage(Handle hMap, const char[] szConfigName, bool bAllowedDefau
   // Timestamp.
   int iTimestamp;
   if (GetTrieValue(hMap, "timestamp", iTimestamp)) {
-    FormatTime(SZF(szBuffer), "%FT%TZ", iTimestamp);
+    FormatTime(SZF(szBuffer), "%Y-%m-%dT%H:%M:%SZ", iTimestamp);
     hJSmsg.SetString("timestamp", szBuffer);
     bAdd = true;
 
     DebugMessage("UTIL_SendMessage(): Installed timestamp %d (%s).", iTimestamp, szBuffer)
+  }
+
+  // Image and Thumbnail.
+  if (GetTrieString(hMap, "embed_thumb", SZF(szBuffer))) {
+    JSONObject hThumb = new JSONObject();
+    hThumb.SetString("url", szBuffer);
+    PushArrayCell(hCleanup, hThumb);
+    hJSmsg.Set("thumbnail", hThumb);
+    bAdd = true;
+
+    DebugMessage("UTIL_SendMessage(): Added thumb (%s).", szBuffer)
+  }
+
+  if (GetTrieString(hMap, "embed_thumb", SZF(szBuffer))) {
+    JSONObject hImage = new JSONObject();
+    hImage.SetString("url", szBuffer);
+    PushArrayCell(hCleanup, hImage);
+    hJSmsg.Set("image", hImage);
+    bAdd = true;
+
+    DebugMessage("UTIL_SendMessage(): Added image (%s).", szBuffer)
   }
 
   if (bAdd) {

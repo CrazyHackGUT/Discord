@@ -315,3 +315,29 @@ NativeHandler(API_SetFooterText) {
 
   SetTrieString(g_hMessage, "footer_text", szText, true);
 }
+
+NativeHandler(API_SetImage) {
+  DebugMessage("API_SetImage()")
+  API_ValidateMsg();
+
+  char szURL[256];
+  GetNativeString(1, szURL, sizeof(szURL));
+
+  if (szURL[0])
+    SetTrieString(g_hMessage, "embed_image", szURL);
+  else
+    RemoveFromTrie(g_hMessage, "embed_image");
+}
+
+NativeHandler(API_SetThumbnail) {
+  DebugMessage("API_SetThumbnail()")
+  API_ValidateMsg();
+
+  char szURL[256];
+  GetNativeString(1, szURL, sizeof(szURL));
+
+  if (szURL[0])
+    SetTrieString(g_hMessage, "embed_thumb", szURL);
+  else
+    RemoveFromTrie(g_hMessage, "embed_thumb");
+}

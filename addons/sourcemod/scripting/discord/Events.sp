@@ -65,6 +65,10 @@ public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iEr
   CreateNative("Discord_SetFooterImage",        API_SetFooterImage);
   CreateNative("Discord_SetFooterText",         API_SetFooterText);
 
+  // Images.
+  CreateNative("Discord_SetThumbnail",          API_SetThumbnail);
+  CreateNative("Discord_SetImage",              API_SetImage);
+
   RegPluginLibrary("discord_extended");
 }
 

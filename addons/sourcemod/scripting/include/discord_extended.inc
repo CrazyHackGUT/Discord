@@ -165,6 +165,26 @@ native void Discord_SetFooterText(const char[] szText, any ...);
 native void Discord_SetFooterImage(const char[] szURL);
 
 /**
+ * Setup a thumbnail for embed object.
+ *
+ * @param   szURL       URL to image.
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
+ */
+native void Discord_SetThumbnail(const char[] szURL);
+
+/**
+ * Setup a image for embed object.
+ *
+ * @param   szURL       URL to image.
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
+ */
+native void Discord_SetImage(const char[] szURL);
+
+/**
  * Checks for webhook availability.
  *
  * @param   szWebHook   WebHook name.
@@ -231,5 +251,9 @@ public __pl_discord_extended_SetNTVOptional() {
   MarkNativeAsOptional("Discord_SetFooterText");
   MarkNativeAsOptional("Discord_SetAuthorURL");
   MarkNativeAsOptional("Discord_SetTimestamp");
+
+  // v1.0.7
+  MarkNativeAsOptional("Discord_SetThumbnail");
+  MarkNativeAsOptional("Discord_SetImage");
 }
 #endif
