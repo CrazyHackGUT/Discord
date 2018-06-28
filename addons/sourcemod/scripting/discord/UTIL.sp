@@ -127,7 +127,7 @@ void UTIL_SendMessage(Handle hMap, const char[] szConfigName, bool bAllowedDefau
     DebugMessage("UTIL_SendMessage(): Added thumb (%s).", szBuffer)
   }
 
-  if (GetTrieString(hMap, "embed_thumb", SZF(szBuffer))) {
+  if (GetTrieString(hMap, "embed_image", SZF(szBuffer))) {
     JSONObject hImage = new JSONObject();
     hImage.SetString("url", szBuffer);
     PushArrayCell(hCleanup, hImage);
