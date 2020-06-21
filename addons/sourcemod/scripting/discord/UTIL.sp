@@ -314,7 +314,13 @@ bool UTIL_AddWebHook(const char[] szWebHookName, const char[] szURL, bool bRewri
 
   int iNeedPos = StrContains(szURL, "discordapp.com/api/webhooks/", false);
   if (iNeedPos == -1) {
-    return false;
+    iNeedPos = StrContains(szURL, "discord.com/api/webhooks/", false);
+    if (iNeedPos == -1)
+    {
+      return false;
+    }
+
+    iNeedPos -= 3;
   }
 
   // d i s c o r d a p p .  c  o  m  /  a  p  i  /  w  e  b  h  o  o  k  s  /  *
