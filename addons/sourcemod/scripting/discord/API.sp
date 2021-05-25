@@ -347,7 +347,12 @@ NativeHandler(API_SetDescription) {
   API_ValidateMsg();
 
   char szDescription[2048];
-  GetNativeString(1, szDescription, sizeof(szDescription));
+  if (iNumParams == 1) {
+    GetNativeString(1, szDescription, sizeof(szDescription));
+  } else {
+    int iWritten;
+    FormatNativeString(0, 1, 2, sizeof(szDescription), iWritten, szDescription);
+  }
 
   if (szDescription[0])
     SetTrieString(g_hMessage, "embed_description", szDescription);
