@@ -341,3 +341,16 @@ NativeHandler(API_SetThumbnail) {
   else
     RemoveFromTrie(g_hMessage, "embed_thumb");
 }
+
+NativeHandler(API_SetDescription) {
+  DebugMessage("API_SetDescription()")
+  API_ValidateMsg();
+
+  char szDescription[2048];
+  GetNativeString(1, szDescription, sizeof(szDescription));
+
+  if (szDescription[0])
+    SetTrieString(g_hMessage, "embed_description", szDescription);
+  else
+    RemoveFromTrie(g_hMessage, "embed_description");
+}
