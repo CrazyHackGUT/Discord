@@ -1,5 +1,5 @@
 language: c
-dist: precise
+dist: bionic
 
 env:
     - SMVERSION=1.7
