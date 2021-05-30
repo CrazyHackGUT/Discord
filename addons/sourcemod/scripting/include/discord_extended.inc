@@ -91,6 +91,17 @@ native void Discord_SetColor(int iColor = 0xFFFFFF);
 native void Discord_SetTitle(const char[] szURL, const char[] szText, any ...);
 
 /**
+ * Setup a description for attachment.
+ *
+ * @param   szText      Text
+ * @param   ...         Any format parameters for text.
+ *
+ * @return  void
+ * @throws  Error, if message don't has been started.
+ */
+native void Discord_SetDescription(const char[] szText, any ...);
+
+/**
  * Add a field for attachment.
  *
  * @param   szTitle     Title
@@ -255,5 +266,8 @@ public __pl_discord_extended_SetNTVOptional() {
   // v1.0.7
   MarkNativeAsOptional("Discord_SetThumbnail");
   MarkNativeAsOptional("Discord_SetImage");
+
+  // v1.1.0
+  MarkNativeAsOptional("Discord_SetDescription");
 }
 #endif

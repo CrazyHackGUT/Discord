@@ -49,6 +49,7 @@ public APLRes AskPluginLoad2(Handle hMySelf, bool bLate, char[] szError, int iEr
   CreateNative("Discord_SetContent",            API_SetContent);
   CreateNative("Discord_SetColor",              API_SetColor);
   CreateNative("Discord_SetTitle",              API_SetTitle);
+  CreateNative("Discord_SetDescription",        API_SetDescription);
   CreateNative("Discord_AddField",              API_AddField);
 
   // WebHooks.
