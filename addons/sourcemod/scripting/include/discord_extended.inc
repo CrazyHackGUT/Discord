@@ -236,7 +236,7 @@ public SharedPlugin __pl_discord_extended = {
 };
 
 #if !defined REQUIRE_PLUGIN
-public __pl_discord_extended_SetNTVOptional() {
+public void __pl_discord_extended_SetNTVOptional() {
   MarkNativeAsOptional("Discord_CancelMessage");
   MarkNativeAsOptional("Discord_StartMessage");
   MarkNativeAsOptional("Discord_SetUsername");
