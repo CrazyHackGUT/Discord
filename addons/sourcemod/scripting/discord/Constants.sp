@@ -32,7 +32,7 @@
  */
 
 #define PLUGIN_DESCRIPTION  "Simpliest library for sending message on Discord Server with Discord WebHook"
-#define PLUGIN_VERSION      "1.1.0"
+#define PLUGIN_VERSION      "1.2.0"
 #define PLUGIN_AUTHOR       "CrazyHackGUT aka Kruzya"
 #define PLUGIN_NAME         "[Discord] Core"
 #define PLUGIN_URL          "https://kruzya.me/go?token=7b029289092653cad845700556c940fd"
@@ -45,6 +45,7 @@
 #define CID(%0)             GetClientOfUserId(%0)
 #define CUD(%0)             GetClientUserId(%0)
 #define SZF(%0)             %0, sizeof(%0)
+#define SZF_POSED(%0,%1)    %0[%1], sizeof(%0)-%1
 
 #define SimpleTimer(%0)     public Action %0(Handle hTimer)
 #define DataTimer(%0)       public Action %0(Handle hTimer, any data)

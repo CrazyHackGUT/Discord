@@ -39,7 +39,6 @@
 #pragma newdecls required
 
 Handle      g_hWebHooks;        // <-- StringMap
-HTTPClient  g_hHTTPClient;      // <-- HTTP Client
 bool        g_bFirstConfigLoad;
 
 #include "discord/Constants.sp"

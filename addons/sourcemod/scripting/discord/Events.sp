@@ -79,17 +79,6 @@ public void OnPluginStart() {
   RegServerCmd("sm_reloaddiscord", Cmd_ReloadDiscord);
   g_hWebHooks = CreateTrie();
 
-  char szUserAgent[64];
-  FormatEx(SZF(szUserAgent), "SourcePawn (DiscordExtended v%s)", PLUGIN_VERSION);
-  DebugMessage("OnPluginStart(): Generated User-Agent: %s", szUserAgent)
-
-  g_hHTTPClient = new HTTPClient("https://discordapp.com/api/webhooks");
-
-  // This is not required. See https://github.com/CrazyHackGUT/sm-ripext/blob/master/curlapi.cpp#L41 for more details.
-  // g_hHTTPClient.SetHeader("Content-Type", "application/json");
-  g_hHTTPClient.SetHeader("User-Agent",   szUserAgent);
-  DebugMessage("OnPluginStart(): Created HTTP Client with defined Content-Type and User-Agent.")
-
   DebugMessage("Discord Extended Library initialized (version " ... PLUGIN_VERSION ... ", build date "... __DATE__ ... " " ... __TIME__ ... ")")
 }
 
@@ -133,10 +122,18 @@ public void OnRequestComplete(HTTPResponse Response, DataPack hPack, const char[
 
 DataTimer(OnRetryRequest) {
   ResetPack(data);
-  char szRequest[256];
+  char szConfigName[32];
 
   JSONObject hRequest = ReadPackCell(data);
-  ReadPackString(data, szRequest, sizeof(szRequest));
+  ReadPackString(data, SZF(szConfigName));
 
-  g_hHTTPClient.Post(szRequest, hRequest, OnRequestComplete, data);
+  HTTPRequest hHttpRequest = UTIL_NewRequest(szConfigName, view_as<bool>(ReadPackCell(data)));
+  if (!hHttpRequest)
+  {
+    hRequest.Close();
+    CloseHandle(data);
+    return;
+  }
+
+  hHttpRequest.Post(hRequest, OnRequestComplete, data);
 }
