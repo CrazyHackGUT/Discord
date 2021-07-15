@@ -333,8 +333,9 @@ HTTPRequest UTIL_NewRequest(const char[] szConfigName, bool bAllowedDefault)
   }
 
   HTTPRequest hRequest = new HTTPRequest(szRequestUrl);
+  hRequest.SetHeader("Content-Type", "application/json");
   hRequest.SetHeader("User-Agent", szUserAgent);
-  DebugMessage("UTIL_NewRequest(): Created HTTP Request with defined User-Agent.")
+  DebugMessage("UTIL_NewRequest(): Created HTTP Request with defined Content-Type and User-Agent.")
 
   return hRequest;
 }
