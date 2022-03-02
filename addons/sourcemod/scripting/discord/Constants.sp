@@ -32,7 +32,7 @@
  */
 
 #define PLUGIN_DESCRIPTION  "Simpliest library for sending message on Discord Server with Discord WebHook"
-#define PLUGIN_VERSION      "1.2.0"
+#define PLUGIN_VERSION      "1.3.0"
 #define PLUGIN_AUTHOR       "CrazyHackGUT aka Kruzya"
 #define PLUGIN_NAME         "[Discord] Core"
 #define PLUGIN_URL          "https://kruzya.me/go?token=7b029289092653cad845700556c940fd"
